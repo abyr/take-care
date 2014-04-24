@@ -11,7 +11,7 @@ var ErrorSchema = new mongoose.Schema({
     line: Number,
     symbol: Number,
     url: String,
-    created: {
+    createdAt: {
         type: Date,
         required: true,
         index: true,
