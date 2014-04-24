@@ -7,7 +7,7 @@ var ErrorSchema = new mongoose.Schema({
         index: true
     },
     trace: String,
-    filename: String,
+    file: String,
     line: Number,
     symbol: Number,
     url: String,
