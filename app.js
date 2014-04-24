@@ -5,8 +5,15 @@ var express = require('express'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    conf = require('./conf'),
-    app = express();
+    app = express(),
+    env = app.get('env'),
+    conf;
+
+if (env === 'development') {
+    env = '';
+}
+
+conf = require('./conf' + ((env) ? '.' + env : ''));
 
 mongoose.connect(conf.db.connection);
 
