@@ -15,7 +15,11 @@ router.post('/', function(req, res) {
     }
 
     errorLog = new ErrorLog({
-        message: message
+        message: message,
+        url: req.get('Referrer'),
+        trace: req.body.stack,
+        file: req.body.fileName,
+        line: req.body.lineNumber,
     });
 
     errorLog.save(function(err){
