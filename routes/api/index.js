@@ -1,7 +1,9 @@
 var express = require('express'),
     router = express.Router(),
+    moment = require('moment'),
     ErrorLog = require("../../models/error").Error,
-    limit = 10;
+    defaultLimit = 10,
+    methods = {};
 
 router.post('/', function(req, res) {
     var message = req.body.message,
@@ -22,7 +24,7 @@ router.post('/', function(req, res) {
         line: req.body.lineNumber,
     });
 
-    errorLog.save(function(err){
+    errorLog.save(function(err) {
         if (err) {
             return res.send(500, {
                 error: true,
@@ -34,11 +36,16 @@ router.post('/', function(req, res) {
 
 });
 
+methods.getStartOfPeriod = function(period) {
+    return +moment().startOf(period || 'day');
+}
+
 router.get('/', function(req, res) {
-    // available filters
-    // passed filters
-    // defaults
-    var filters = {};
+    var filters = {
+        createdAt: {
+            $gt: methods.getStartOfPeriod(req.body.period)
+        }
+    };
 
     ErrorLog.find(filters, function(err, data) {
         if (err) {
@@ -52,9 +59,13 @@ router.get('/', function(req, res) {
 });
 
 router.get('/count', function(req, res) {
-    var filters = {};
+    var filters = {
+        createdAt: {
+            $gt: methods.getStartOfPeriod(req.body.period)
+        }
+    };
 
-    ErrorLog.collection.count(filters, function (err, count) {
+    ErrorLog.count(filters, function(err, count) {
         if (err) {
             return res.send(500, {
                 error: true,
