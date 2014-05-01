@@ -19,8 +19,8 @@ var ErrorSchema = new mongoose.Schema({
     }
 });
 
-var Error = mongoose.model("Error", ErrorSchema);
+var ErrorLog = mongoose.model("ErrorLog", ErrorSchema);
 
 module.exports = {
-    Error: Error
+    ErrorLog: ErrorLog
 }
