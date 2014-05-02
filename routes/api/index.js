@@ -20,10 +20,11 @@ router.post('/', function(req, res) {
 
     errorLog = new ErrorLog({
         message: message,
-        url: req.get('Referrer'),
+        referrer: req.get('Referrer'),
         trace: req.body.stack,
         file: req.body.fileName,
         line: req.body.lineNumber,
+        browser: req.body.browser
     });
 
     errorLog.save(function(err) {

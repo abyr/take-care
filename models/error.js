@@ -6,11 +6,17 @@ var ErrorSchema = new mongoose.Schema({
         required: true,
         index: true
     },
-    trace: String,
-    file: String,
+
     line: Number,
     symbol: Number,
+
+    file: String,
     url: String,
+    referrer: String,
+
+    trace: String,
+    browser: String,
+
     createdAt: {
         type: Date,
         required: true,
