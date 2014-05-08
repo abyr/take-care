@@ -8,6 +8,9 @@ var express = require('express'),
 
 // record new error log
 router.post('/', function(req, res) {
+
+    console.log('body', req.body);
+
     var message = req.body.message,
         error;
 
@@ -19,13 +22,33 @@ router.post('/', function(req, res) {
     }
 
     errorLog = new ErrorLog({
-        message: message,
+        message: message[0],
+    });
+
+    if (req.body.url) {
+        errorLog.url = req.body.url[0];
+    }
+
+    if (req.body.lineNumber) {
+        errorLog.line = req.body.lineNumber[0];
+    }
+
+    if (req.body.symbolNumber) {
+        errorLog.symbol = req.body.symbolNumber[0];
+    }
+
+    /*
         referrer: req.get('Referrer'),
         trace: req.body.stack,
-        file: req.body.fileName,
-        line: req.body.lineNumber,
+        url: req.body.url,
+        line: +req.body.lineNumber,
+        symbol: +req.body.symbolNumber,
         browser: req.body.browser
-    });
+     */
+
+
+
+    console.log('error', errorLog);
 
     errorLog.save(function(err) {
         if (err) {
