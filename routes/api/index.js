@@ -9,8 +9,6 @@ var express = require('express'),
         // process indexed data using index
         makeErrorFromRequest: function(req, index) {
 
-            console.log('index', index);
-
             var body = req.body,
                 i = index,
                 message, url, lineNumber, symbolNumber;
@@ -71,22 +69,16 @@ router.post('/', function(req, res) {
 
     if (typeof message === 'object') { // array
 
-        console.log('process array');
-
         // iterate all
         for (i = 0; i < message.length; i++) {
 
-            console.log('for i', i);
-
             errorLog = methods.makeErrorFromRequest(req, i);
-
-            console.log('saving', i, errorLog);
 
             // save indexed one
             errorLog.save(function(err) {
                 if (err) {
 
-                    console.log('error on save!', err.message)
+                    console.error('error on save!', err.message)
 
                     // todo:
                     return res.send(500, {
@@ -116,7 +108,7 @@ router.post('/', function(req, res) {
         errorLog.save(function(err) {
             if (err) {
 
-                console.log('error on save!', err.message)
+                console.error('error on save!', err.message);
 
                 // todo:
                 return res.send(500, {
