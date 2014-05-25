@@ -92,7 +92,8 @@ router.post('/', function(req, res) {
                 // error on save
                 return callback(err);
             }
-            callback(null, errorLog); // saved
+            // saved
+            callback(null, errorLog);
         });
 
     }, function(err) {
@@ -104,7 +105,7 @@ router.post('/', function(req, res) {
         }
 
         // saved
-        res.send(201, JSON.stringify(errorLogs)); // array
+        res.send(201, JSON.stringify(errorLogs));
     });
 });
 
@@ -148,8 +149,7 @@ router.get('/count', function(req, res) {
             });
         }
         res.send(200, {
-            count: count,
-            period: period // todo: detete debug info
+            count: count
         });
     });
 });
