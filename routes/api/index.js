@@ -4,7 +4,51 @@ var express = require('express'),
     _ = require('lodash'),
     ErrorLog = require("../../models/error").ErrorLog,
     defaultLimit = 10,
-    methods = {};
+    methods = {
+
+        // process indexed data using index
+        makeErrorFromRequest: function(req, index) {
+
+            console.log('index', index);
+
+            var body = req.body,
+                i = index,
+                message, url, lineNumber, symbolNumber;
+
+            // referrer: req.get('Referrer'),
+            // trace: req.body.stack,
+            // url: req.body.url,
+            // line: +req.body.lineNumber,
+            // symbol: +req.body.symbolNumber,
+            // browser: req.body.browser
+
+            if (typeof i !== 'undefined') { // allow zero index
+                message = body.message[i];
+                url = body.url[i];
+                line = body.lineNumber[i];
+                symbol = (body.symbolNumber && body.symbolNumber[i])
+                    ? body.symbolNumber[i]
+                    : null;
+            } else {
+                message = body.message;
+                url = body.url;
+                line = body.lineNumber;
+                symbol = body.symbolNumber || null;
+            }
+
+            errorLog = new ErrorLog({
+                message: message,
+                url: url,
+                line: +line
+            });
+
+            if (symbol) {
+                errorLog.symbol = +symbol;
+            }
+
+            return errorLog;
+        }
+    };
 
 // record new error log
 router.post('/', function(req, res) {
@@ -12,7 +56,9 @@ router.post('/', function(req, res) {
     console.log('body', req.body);
 
     var message = req.body.message,
-        error;
+        errorLog,
+        errorLogs = [],
+        i = 0;
 
     if (!message) {
         res.send(400, {
@@ -21,44 +67,69 @@ router.post('/', function(req, res) {
         });
     }
 
-    errorLog = new ErrorLog({
-        message: message[0],
-    });
+    // fixme: use deferred
 
-    if (req.body.url) {
-        errorLog.url = req.body.url[0];
-    }
+    if (typeof message === 'object') { // array
 
-    if (req.body.lineNumber) {
-        errorLog.line = req.body.lineNumber[0];
-    }
+        console.log('process array');
 
-    if (req.body.symbolNumber) {
-        errorLog.symbol = req.body.symbolNumber[0];
-    }
+        // iterate all
+        for (i = 0; i < message.length; i++) {
 
-    /*
-        referrer: req.get('Referrer'),
-        trace: req.body.stack,
-        url: req.body.url,
-        line: +req.body.lineNumber,
-        symbol: +req.body.symbolNumber,
-        browser: req.body.browser
-     */
+            console.log('for i', i);
 
+            errorLog = methods.makeErrorFromRequest(req, i);
 
+            console.log('saving', i, errorLog);
 
-    console.log('error', errorLog);
+            // save indexed one
+            errorLog.save(function(err) {
+                if (err) {
 
-    errorLog.save(function(err) {
-        if (err) {
-            return res.send(500, {
-                error: true,
-                message: err.message
+                    console.log('error on save!', err.message)
+
+                    // todo:
+                    return res.send(500, {
+                        error: true,
+                        message: err.message
+                    });
+                }
+
+                errorLogs.push(errorLog); // save for response
+
+                // fixme: use deferred
+                if (message.length === errorLogs.length) {
+
+                    console.log('created', errorLogs);
+
+                    res.send(201, JSON.stringify(errorLogs));
+                }
+
             });
+
         }
-        res.send(201, JSON.stringify(errorLog));
-    });
+
+    } else {
+
+        errorLog = methods.makeErrorFromRequest(req);
+
+        errorLog.save(function(err) {
+            if (err) {
+
+                console.log('error on save!', err.message)
+
+                // todo:
+                return res.send(500, {
+                    error: true,
+                    message: err.message
+                });
+            }
+
+            res.send(201, JSON.stringify(errorLog));
+
+        });
+
+    }
 
 });
 
@@ -102,7 +173,8 @@ router.get('/count', function(req, res) {
             });
         }
         res.send(200, {
-            count: count
+            count: count,
+            period: period // todo: detete debug info
         });
     });
 });
