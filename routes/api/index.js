@@ -2,6 +2,7 @@ var express = require('express'),
     router = express.Router(),
     moment = require('moment'),
     _ = require('lodash'),
+    async = require('async'),
     ErrorLog = require("../../models/error").ErrorLog,
     defaultLimit = 10,
     methods = {
@@ -51,8 +52,6 @@ var express = require('express'),
 // record new error log
 router.post('/', function(req, res) {
 
-    console.log('body', req.body);
-
     var message = req.body.message,
         errorLog,
         errorLogs = [],
@@ -65,64 +64,48 @@ router.post('/', function(req, res) {
         });
     }
 
-    // fixme: use deferred
-
     if (typeof message === 'object') { // array
-
         // iterate all
         for (i = 0; i < message.length; i++) {
-
-            errorLog = methods.makeErrorFromRequest(req, i);
-
-            // save indexed one
-            errorLog.save(function(err) {
-                if (err) {
-
-                    console.error('error on save!', err.message)
-
-                    // todo:
-                    return res.send(500, {
-                        error: true,
-                        message: err.message
-                    });
-                }
-
-                errorLogs.push(errorLog); // save for response
-
-                // fixme: use deferred
-                if (message.length === errorLogs.length) {
-
-                    console.log('created', errorLogs);
-
-                    res.send(201, JSON.stringify(errorLogs));
-                }
-
-            });
-
+            errorLogs.push(methods.makeErrorFromRequest(req, i));
         }
-
     } else {
-
+        // make single
         errorLog = methods.makeErrorFromRequest(req);
-
-        errorLog.save(function(err) {
-            if (err) {
-
-                console.error('error on save!', err.message);
-
-                // todo:
-                return res.send(500, {
-                    error: true,
-                    message: err.message
-                });
-            }
-
-            res.send(201, JSON.stringify(errorLog));
-
-        });
-
     }
 
+    // save single error
+    errorLog && errorLogs.push(errorLogs);
+
+    if (!errorLogs.length) {
+        return res.send(400, {
+            error: true,
+            message: 'No errors to save'
+        })
+    }
+
+    // save several errors
+    async.each(errorLogs, function(errorLog, callback) {
+        // save single error
+        errorLog && errorLog.save(function(err) {
+            if (err) {
+                // error on save
+                return callback(err);
+            }
+            callback(null, errorLog); // saved
+        });
+
+    }, function(err) {
+        if (err) {
+            return res.send(500, {
+                error: true,
+                message: err.message
+            });
+        }
+
+        // saved
+        res.send(201, JSON.stringify(errorLogs)); // array
+    });
 });
 
 // get first date (ts) of the period ('day', 'month', etc.)
