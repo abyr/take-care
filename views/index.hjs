@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ title }}</title>
+    <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>{{ title }}</h1>
-    <p></p>
+    <div>
+
+        <h1>{{ title }}</h1>
+
+        {{#pagination}}
+            <b>{{page}}</b> of {{pages}}
+        {{/pagination}}
+
+        {{# errors }}
+            <div class="errors">
+                <div class="error">
+                    <h2>{{message}}</h2>
+                    <div>
+                        {{url}}
+                        {{#line}}
+                            ({{line}}{{#symbol}}, {{symbol}}{{/symbol}})
+                        {{/line}}
+                        <small>{{createdAt}}</small>
+                    </div>
+
+                </div>
+            </div>
+        {{/ errors }}</div>
   </body>
 </html>

@@ -3,6 +3,7 @@ var express = require('express'),
     moment = require('moment'),
     _ = require('lodash'),
     async = require('async'),
+    Period = require('../../helpers/period'),
     ErrorLog = require("../../models/error").ErrorLog,
     defaultLimit = 10,
     methods = {
@@ -109,16 +110,11 @@ router.post('/', function(req, res) {
     });
 });
 
-// get first date (ts) of the period ('day', 'month', etc.)
-methods.getStartOfPeriod = function(period) {
-    return +moment().startOf(period);
-}
-
 router.get('/', function(req, res) {
     var period = req.body.period || req.query.period || 'day',
         filters = {
             createdAt: {
-                $gt: methods.getStartOfPeriod(period)
+                $gt: Period.getStartOf(period)
             }
         };
 
@@ -137,7 +133,7 @@ router.get('/count', function(req, res) {
     var period = req.body.period || req.query.period || 'day',
         filters = {
             createdAt: {
-                $gt: methods.getStartOfPeriod(period)
+                $gt: Period.getStartOf(period)
             }
         };
 
@@ -159,7 +155,7 @@ router.delete('/', function(req, res) {
     var period = req.body.period || req.query.period || 'year',
         filters = {
             createdAt: {
-                $lt: methods.getStartOfPeriod(period)
+                $lt: Period.getStartOf(period)
             }
         };
 
