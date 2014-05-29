@@ -6,11 +6,10 @@
   </head>
   <body>
     <div>
-
         <h1>{{ title }}</h1>
 
         {{#pagination}}
-            <b>{{page}}</b> of {{pages}}
+            Page <b>{{page}}</b> of {{pages}}
         {{/pagination}}
 
         {{# errors }}
@@ -28,6 +27,11 @@
                     </div>
                 </div>
             </div>
-        {{/ errors }}</div>
+        {{/ errors }}
+
+        {{^errors}}
+            No data yet
+        {{/errors}}
+    </div>
   </body>
 </html>

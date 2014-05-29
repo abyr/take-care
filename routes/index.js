@@ -1,10 +1,9 @@
 var express = require('express'),
     async = require('async'),
     moment = require('moment'),
-    router = express.Router();
 
-
-var api = require('./api/index'),
+    router = express.Router(),
+    api = require('./api/index'),
     Period = require('../helpers/period'),
     ErrorLog = require("../models/error").ErrorLog;
 
@@ -41,9 +40,6 @@ router.get('/', function(req, res) {
         }
 
     }, function(err, results) {
-
-        console.log('count !! ', results.count);
-
         if (err) {
             return res.send(500, {
                 error: true,
