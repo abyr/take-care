@@ -118,7 +118,11 @@ router.get('/', function(req, res) {
             }
         };
 
-    ErrorLog.find(filters, function(err, data) {
+    ErrorLog.find(filters, null, {
+        sort: {
+            createdAt: -1
+        }
+    }, function(err, data) {
         if (err) {
             return res.send(500, {
                 error: true,

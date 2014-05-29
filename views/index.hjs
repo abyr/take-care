@@ -20,11 +20,12 @@
                     <div>
                         {{url}}
                         {{#line}}
-                            ({{line}}{{#symbol}}, {{symbol}}{{/symbol}})
+                            at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
                         {{/line}}
-                        <small>{{createdAt}}</small>
                     </div>
-
+                    <div>
+                        <small>{{datetime}}</small>
+                    </div>
                 </div>
             </div>
         {{/ errors }}</div>

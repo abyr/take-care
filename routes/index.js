@@ -1,5 +1,6 @@
 var express = require('express'),
     async = require('async'),
+    moment = require('moment'),
     router = express.Router();
 
 
@@ -19,7 +20,10 @@ router.get('/', function(req, res) {
         },
         pagination = {
             skip: 0,
-            limit: 10
+            limit: 10,
+            sort: {
+                createdAt: -1
+            }
         };
 
     async.series({
@@ -50,11 +54,9 @@ router.get('/', function(req, res) {
         if (!results.count) {
             return res.render('index', {
                 title: 'Take Care',
-                errors: [],
-                pagination: pagination
+                errors: []
             });
         }
-
 
         pages = Math.ceil(results.count / pagination.limit);
 
@@ -67,7 +69,7 @@ router.get('/', function(req, res) {
 
         pagination.skip = pagination.limit * (page - 1);
 
-        ErrorLog.find(filters, null, pagination, function(err, data) {
+        ErrorLog.find(filters, null, pagination, function(err, logs) {
             if (err) {
                 return res.render(err);
             }
@@ -75,9 +77,14 @@ router.get('/', function(req, res) {
             pagination.page = page;
             pagination.pages = pages;
 
+            logs = logs.map(function(log){
+                log.datetime = moment(log.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+                return log;
+            })
+
             res.render('index', {
                 title: 'Take Care',
-                errors: data,
+                errors: logs,
                 pagination: pagination
             });
         });
