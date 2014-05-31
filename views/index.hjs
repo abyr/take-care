@@ -12,6 +12,16 @@
             Page <b>{{page}}</b> of {{pages}}
         {{/pagination}}
 
+        <ul class="periods">
+            {{#periods}}
+                <li class="filter{{#active}} active{{/active}}">{{title}}</li>
+            {{/periods}}
+
+            {{^periods}}
+                <li>No periods</li>
+            {{/periods}}
+        </ul>
+
         {{#errors}}
             <div class="errors">
                 <div class="error">

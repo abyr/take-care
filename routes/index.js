@@ -1,6 +1,7 @@
 var express = require('express'),
     async = require('async'),
     moment = require('moment'),
+    _ = require('lodash'),
 
     router = express.Router(),
     api = require('./api/index'),
@@ -23,7 +24,19 @@ router.get('/', function(req, res) {
             sort: {
                 createdAt: -1
             }
-        };
+        },
+        periods = [{
+            title: 'day',
+            active: false
+        },
+        {
+            title: 'week',
+            active: false
+        },
+        {
+            title: 'month',
+            active: false
+        }];
 
     async.series({
 
@@ -76,12 +89,18 @@ router.get('/', function(req, res) {
             logs = logs.map(function(log){
                 log.datetime = moment(log.createdAt).format('MMMM Do YYYY, h:mm:ss a');
                 return log;
-            })
+            });
+
+            periods = _.each(periods, function(p){
+                p.active = (p.title === period);
+            });
 
             res.render('index', {
                 title: 'Take Care',
                 errors: logs,
-                pagination: pagination
+                pagination: pagination,
+                periods: periods,
+                period: period
             });
         });
     });
