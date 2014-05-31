@@ -1,21 +1,23 @@
 var mongoose = require("mongoose");
 
 var ErrorSchema = new mongoose.Schema({
-    message: {
+    message: { // text message
         type: String,
         required: true,
         index: true
     },
 
-    line: Number,
-    symbol: Number,
+    line: Number, // line number
+    symbol: Number, // symbol
 
-    file: String,
-    url: String,
-    referrer: String,
+    file: String, // file - url
+    url: String, // file-url
+    referrer: String, // who ask for it
 
-    trace: String,
-    browser: String,
+    trace: String, // error trace
+    browser: String, // browser
+
+    fake: Boolean,
 
     createdAt: {
         type: Date,

@@ -13,7 +13,7 @@ var express = require('express'),
 
             var body = req.body,
                 i = index,
-                message, url, lineNumber, symbolNumber;
+                message, url, lineNumber, symbolNumber, fake;
 
             // referrer: req.get('Referrer'),
             // trace: req.body.stack,
@@ -23,17 +23,22 @@ var express = require('express'),
             // browser: req.body.browser
 
             if (typeof i !== 'undefined') { // allow zero index
+
+                fake = (body.fake && body.fake[i]) ? !!body.fake : false;
+
                 message = body.message[i];
                 url = body.url[i];
                 line = body.lineNumber[i];
                 symbol = (body.symbolNumber && body.symbolNumber[i])
-                    ? body.symbolNumber[i]
+                    ? +body.symbolNumber[i]
                     : null;
+
             } else {
                 message = body.message;
                 url = body.url;
                 line = body.lineNumber;
                 symbol = body.symbolNumber || null;
+                fake = false;
             }
 
             errorLog = new ErrorLog({
@@ -43,7 +48,10 @@ var express = require('express'),
             });
 
             if (symbol) {
-                errorLog.symbol = +symbol;
+                errorLog.symbol = symbol;
+            }
+            if (fake) {
+                errorLog.fake = fake;
             }
 
             return errorLog;

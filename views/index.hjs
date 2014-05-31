@@ -12,10 +12,10 @@
             Page <b>{{page}}</b> of {{pages}}
         {{/pagination}}
 
-        {{# errors }}
+        {{#errors}}
             <div class="errors">
                 <div class="error">
-                    <h2>{{message}}</h2>
+                    <h2>{{#fake}}[fake] {{/fake}}{{message}}</h2>
                     <div>
                         {{url}}
                         {{#line}}
@@ -27,7 +27,7 @@
                     </div>
                 </div>
             </div>
-        {{/ errors }}
+        {{/errors}}
 
         {{^errors}}
             No data yet
