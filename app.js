@@ -12,7 +12,6 @@ var express = require('express'),
 if (env === 'development') {
     env = '';
 }
-
 conf = require('./conf' + ((env) ? '.' + env : ''));
 
 mongoose.connect(conf.db.connection);
