@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 var debug = require('debug')('my-application');
-var app = require('../app');
+var app = require('../app'),
+    env = app.get('env'),
+    conf;
 
-app.set('port', process.env.PORT || 3000);
+if (env === 'development') {
+    env = '';
+}
+conf = require('../conf' + ((env) ? '.' + env : ''));
+
+app.set('port', process.env.PORT || conf.app.port || 3000);
 
 var server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+    debug('Express server listening on port ' + server.address().port);
 });
