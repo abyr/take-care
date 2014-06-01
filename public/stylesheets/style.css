@@ -1,8 +1,30 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+    color: #00B7FF;
+}
+ul li {
+    display: inline-block;
 }
 
-a {
-  color: #00B7FF;
+.b-group {
+    display: block;
+}
+.b-group-line {
+    display: inline-block;
+    padding: 0;
+}
+.b-group > * {
+    color: #08c;
+}
+.b-group > *:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.b-group > .active {
+    color: #444;
+    text-decoration: none;
+    cursor: none;
 }
