@@ -8,40 +8,153 @@
     <div>
         <h1>{{ title }}</h1>
 
-        {{#pagination}}
-            Page <b>{{page}}</b> of {{pages}}
-        {{/pagination}}
+        <div>
+            <ul class="b-group b-group-line filters">
+                {{^periods}}
+                    <li>No periods</li>
+                {{/periods}}
 
-        <ul class="periods">
-            {{#periods}}
-                <li class="filter{{#active}} active{{/active}}">{{title}}</li>
-            {{/periods}}
+                {{#periods}}
+                    <li class="{{#active}}active{{/active}}">
+                        {{#active}}
+                            <span>{{title}}</span>
+                        {{/active}}
+                        {{^active}}
+                            <span class='clickable' data-key="period" data-force="1">{{title}}</span>
+                        {{/active}}
+                    </li>
+                {{/periods}}
+            </ul>
+        </div>
 
-            {{^periods}}
-                <li>No periods</li>
-            {{/periods}}
-        </ul>
+        <div>
+            {{#pagination}}
+                <ul class="b-group b-group-line pagination">
+                    {{^items}}
+                        <li></li>
+                    {{/items}}
+                    {{#items}}
+                        <li class="{{#active}} active{{/active}}">
+                            {{#active}}
+                                <span>{{title}}</span>
+                            {{/active}}
+                            {{^active}}
+                                <span class="clickable" data-key="page" data-val="{{page}}">{{title}}</span>
+                            {{/active}}
+                        </li>
+                    {{/items}}
+                </ul>
+                <span>
+                    ({{page}} of {{pages}})
+                </span>
+            {{/pagination}}
 
-        {{#errors}}
-            <div class="errors">
-                <div class="error">
-                    <h2>{{#fake}}[fake] {{/fake}}{{message}}</h2>
-                    <div>
-                        {{url}}
-                        {{#line}}
-                            at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
-                        {{/line}}
-                    </div>
-                    <div>
-                        <small>{{datetime}}</small>
-                    </div>
+            {{^errors}}
+                <div>
+                    No data yet
                 </div>
-            </div>
-        {{/errors}}
+            {{/errors}}
 
-        {{^errors}}
-            No data yet
-        {{/errors}}
+            {{#errors}}
+                <div>
+                    <h2>{{#fake}}[fake] {{/fake}}{{message}}</h2>
+                    {{url}}
+                    {{#line}}
+                        at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
+                    {{/line}}
+                    <br/>
+                    {{browser}}
+                    {{^browser}}browser{{/browser}}
+                    <br/>
+                    <small>{{datetime}}</small>
+                </div>
+            {{/errors}}
+
+            <!-- copy -->
+            {{#pagination}}
+                <ul class="b-group b-group-line pagination">
+                    {{^items}}
+                        <li></li>
+                    {{/items}}
+                    {{#items}}
+                        <li class="{{#active}} active{{/active}}">
+                            {{#active}}
+                                <span>{{title}}</span>
+                            {{/active}}
+                            {{^active}}
+                                <span class="clickable" data-key="page" data-val="{{page}}">{{title}}</span>
+                            {{/active}}
+                        </li>
+                    {{/items}}
+                </ul>
+                <span>
+                    ({{page}} of {{pages}})
+                </span>
+            {{/pagination}}
+            <!-- copy end -->
+
+        </div>
+
+
+
     </div>
+
+    <script>
+        var prop,
+            filter,
+            params = {},
+            filters = (window.location.search || '?').substr(1).split('&'),
+            navs, el;
+
+        for (prop in filters) {
+            if (filters.hasOwnProperty(prop)) {
+                filter = filters[prop].split('=');
+                params[filter[0]] = filter[1];
+            }
+        }
+
+        var navigate = function() {
+            var force = this.getAttribute('data-force'),
+                key = this.getAttribute('data-key'),
+                value = this.getAttribute('data-val') || this.textContent;
+
+            params[key] =  value;
+
+            if (force) {
+                window.location.search = [key, value].join('=');
+            } else {
+
+                window.location.search = objToParamsStr(params);
+            }
+        };
+
+        var objToParamsStr = function(obj) {
+            var str = '',
+                p, v;
+
+            for (p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    v = obj[p];
+                    if (v) {
+                        str += p + '=' + obj[p] + '&';
+                    }
+                }
+            }
+            return str.substr(0, str.length-1);
+        }
+
+        // keep filters navigation
+        navs = document.querySelectorAll('.filters .clickable, .pagination .clickable');
+        if (navs.length) {
+            for (prop in navs) {
+                if (navs.hasOwnProperty(prop)) {
+                    el = navs[prop];
+                    (el && typeof el.addEventListener === 'function') && el.addEventListener('click', navigate);
+                }
+            }
+        }
+
+    </script>
+
   </body>
 </html>
