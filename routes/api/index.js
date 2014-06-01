@@ -13,17 +13,9 @@ var express = require('express'),
 
             var body = req.body,
                 i = index,
-                message, url, lineNumber, symbolNumber, fake;
-
-            // referrer: req.get('Referrer'),
-            // trace: req.body.stack,
-            // url: req.body.url,
-            // line: +req.body.lineNumber,
-            // symbol: +req.body.symbolNumber,
-            // browser: req.body.browser
+                message, url, lineNumber, symbolNumber, browser, fake;
 
             if (typeof i !== 'undefined') { // allow zero index
-
                 fake = (body.fake && body.fake[i]) ? !!body.fake : false;
 
                 message = body.message[i];
@@ -32,13 +24,15 @@ var express = require('express'),
                 symbol = (body.symbolNumber && body.symbolNumber[i])
                     ? +body.symbolNumber[i]
                     : null;
+                browser = body.browser[i];
 
             } else {
+                fake = body.fake;
                 message = body.message;
                 url = body.url;
                 line = body.lineNumber;
                 symbol = body.symbolNumber || null;
-                fake = false;
+                browser = body.browser;
             }
 
             errorLog = new ErrorLog({
@@ -52,6 +46,9 @@ var express = require('express'),
             }
             if (fake) {
                 errorLog.fake = fake;
+            }
+            if (browser) {
+                errorLog.browser = browser;
             }
 
             return errorLog;

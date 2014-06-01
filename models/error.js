@@ -12,12 +12,12 @@ var ErrorSchema = new mongoose.Schema({
 
     file: String, // file - url
     url: String, // file-url
-    referrer: String, // who ask for it
+    referrer: String, // who asked for it
 
     trace: String, // error trace
     browser: String, // browser
 
-    fake: Boolean,
+    fake: Boolean, // is debug error
 
     createdAt: {
         type: Date,

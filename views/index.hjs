@@ -20,7 +20,7 @@
                             <span>{{title}}</span>
                         {{/active}}
                         {{^active}}
-                            <span class='clickable' data-key="period" data-force="1">{{title}}</span>
+                            <span class="clickable" data-key="period" data-force="1">{{title}}</span>
                         {{/active}}
                     </li>
                 {{/periods}}
@@ -106,6 +106,7 @@
             filters = (window.location.search || '?').substr(1).split('&'),
             navs, el;
 
+        // search params to object
         for (prop in filters) {
             if (filters.hasOwnProperty(prop)) {
                 filter = filters[prop].split('=');
