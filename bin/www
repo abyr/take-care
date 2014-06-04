@@ -2,6 +2,7 @@
 var debug = require('debug')('my-application');
 var app = require('../app'),
     env = app.get('env'),
+    ff = require('../helpers/featureFlags'),
     conf;
 
 if (env === 'development') {
@@ -12,5 +13,8 @@ conf = require('../conf' + ((env) ? '.' + env : ''));
 app.set('port', process.env.PORT || conf.app.port || 3000);
 
 var server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
+    var message = 'Express server listening on port ' + server.address().port;
+
+    ff('print_port_on_start') && console.log(message);
+    debug(message);
 });

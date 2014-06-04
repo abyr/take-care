@@ -4,6 +4,7 @@ logs
 
 # Settings
 conf.js
+ff.json
 
 # Runtime data
 pids
@@ -30,4 +31,3 @@ node_modules
 
 # Wiki
 wiki/
-
