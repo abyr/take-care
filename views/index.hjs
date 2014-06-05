@@ -6,7 +6,7 @@
   </head>
   <body>
     <div>
-        <h1>{{ title }}</h1>
+        <h1>{{title}}</h1>
 
         <div>
             <ul class="b-group b-group-line filters">
@@ -57,7 +57,10 @@
 
             {{#errors}}
                 <div>
-                    <h2>{{#fake}}[fake] {{/fake}}{{message}}</h2>
+                    <h2>
+                        {{#occuredTimes}}<span class="in-circle">{{occuredTimes}}</span>{{/occuredTimes}}
+                        {{#fake}}[fake] {{/fake}}{{message}}
+                    </h2>
                     {{url}}
                     {{#line}}
                         at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
@@ -71,6 +74,11 @@
                     {{^browser}}browser{{/browser}}
                     <br/>
                     <span>{{ago}}</span> <i class="faded">{{datetime}}</i>
+                    <br/>
+                    {{^occuredTimes}}New error. Never seen before{{/occuredTimes}}
+                    {{#occuredTimes}}
+                        Occured {{occuredTimes}} times
+                    {{/occuredTimes}}
                 </div>
             {{/errors}}
 

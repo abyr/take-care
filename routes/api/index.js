@@ -41,7 +41,8 @@ var express = require('express'),
                 message: message,
                 url: url,
                 line: +line,
-                beforeLoad: !!+beforeLoad
+                beforeLoad: !!+beforeLoad,
+                occuredTimes: 0
             });
 
             if (symbol) {
@@ -95,14 +96,40 @@ router.post('/', function(req, res) {
 
     // save several errors
     async.each(errorLogs, function(errorLog, callback) {
-        // save single error
-        errorLog && errorLog.save(function(err) {
-            if (err) {
-                // error on save
-                return callback(err);
+
+        //todo: use message search ones
+        async.series({
+            // get similar count
+            count: function(callback) {
+                ErrorLog.count({message: errorLog.message}, function(err, count) {
+                    if (err) {
+                        return res.render('error', err);
+                    }
+                    callback(null, count);
+                });
             }
-            // saved
-            callback(null, errorLog);
+        }, function(err, results) {
+            // save
+            if (err) {
+                return res.send(500, {
+                    error: true,
+                    message: err.message
+                });
+            }
+
+            // todo: save on fetch + cache
+            errorLog.occuredTimes = results.count;
+
+            // save single error
+            errorLog && errorLog.save(function(err) {
+                if (err) {
+                    // error on save
+                    return callback(err);
+                }
+                // saved
+                callback(null, errorLog);
+            });
+
         });
 
     }, function(err) {
@@ -112,7 +139,6 @@ router.post('/', function(req, res) {
                 message: err.message
             });
         }
-
         // saved
         res.send(201, JSON.stringify(errorLogs));
     });
