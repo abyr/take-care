@@ -17,6 +17,7 @@ var ErrorSchema = new mongoose.Schema({
     trace: String, // error trace
     browser: String, // browser
 
+    beforeLoad: Boolean, // before page was loaded
     fake: Boolean, // is debug error
 
     createdAt: {

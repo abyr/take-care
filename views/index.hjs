@@ -62,6 +62,10 @@
                     {{#line}}
                         at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
                     {{/line}}
+                    <sup>
+                        {{#beforeLoad}}on load{{/beforeLoad}}
+                        {{^beforeLoad}}after load{{/beforeLoad}}
+                    </sup>
                     <br/>
                     {{browser}}
                     {{^browser}}browser{{/browser}}

@@ -96,11 +96,8 @@ router.get('/', function(req, res) {
             pagination.pages = pages;
 
             pagination.items = _.each(paginationItems, function(p) {
-                console.log('p', p);
                 p.active = (p.page === page || p.page < 1 || p.page > pages);
             });
-
-            console.log('pi', pagination.items);
 
             feedback.pagination = pagination;
             feedback.errors = errorLogs.map(function(log) {
