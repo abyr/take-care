@@ -28,3 +28,9 @@ ul li {
     text-decoration: none;
     cursor: none;
 }
+.hidden {
+    display: none;
+}
+.faded {
+    opacity: 0.3;
+}

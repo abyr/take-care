@@ -70,7 +70,7 @@
                     {{browser}}
                     {{^browser}}browser{{/browser}}
                     <br/>
-                    <small>{{datetime}}</small>
+                    <span>{{ago}}</span> <i class="faded">{{datetime}}</i>
                 </div>
             {{/errors}}
 

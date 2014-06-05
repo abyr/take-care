@@ -101,7 +101,8 @@ router.get('/', function(req, res) {
 
             feedback.pagination = pagination;
             feedback.errors = errorLogs.map(function(log) {
-                log.datetime = moment(log.createdAt).format('MMMM Do YYYY, h:mm:ss a');
+                log.datetime = Period.daytime(log.createdAt);
+                log.ago = Period.ago(log.createdAt);
                 return log;
             });
             res.render('index', feedback);
