@@ -84,7 +84,6 @@ router.get('/', function(req, res) {
             page: +pages
         });
 
-
         // skip as filter
         pagination.skip = pagination.limit * (page - 1);
 
@@ -92,20 +91,39 @@ router.get('/', function(req, res) {
             if (err) {
                 return res.render('error', err);
             }
-            pagination.page = page;
-            pagination.pages = pages;
 
-            pagination.items = _.each(paginationItems, function(p) {
-                p.active = (p.page === page || p.page < 1 || p.page > pages);
+            async.each(errorLogs, function(errorLog, callback) {
+
+                errorLog.datetime = Period.daytime(errorLog.createdAt);
+                errorLog.ago = Period.ago(errorLog.createdAt);
+
+                ErrorLog.count({
+                    message: errorLog.message
+                }, function(err, count) {
+                    if (err) {
+                        return res.render('error', err);
+                    }
+                    errorLog.occuredTimes = count;
+
+                    callback(null, errorLog);
+                });
+
+            }, function(err, results) {
+
+                pagination.page = page;
+                pagination.pages = pages;
+
+                pagination.items = _.each(paginationItems, function(p) {
+                    p.active = (p.page === page || p.page < 1 || p.page > pages);
+                });
+
+                feedback.pagination = pagination;
+                feedback.errors = errorLogs;
+                res.render('index', feedback);
+
             });
 
-            feedback.pagination = pagination;
-            feedback.errors = errorLogs.map(function(log) {
-                log.datetime = Period.daytime(log.createdAt);
-                log.ago = Period.ago(log.createdAt);
-                return log;
-            });
-            res.render('index', feedback);
+
         });
     });
 

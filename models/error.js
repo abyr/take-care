@@ -20,8 +20,6 @@ var ErrorSchema = new mongoose.Schema({
     beforeLoad: Boolean, // before page was loaded
     fake: Boolean, // is debug error
 
-    occuredTimes: Number, // similar errors count
-
     createdAt: {
         type: Date,
         required: true,
