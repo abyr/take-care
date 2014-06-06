@@ -57,8 +57,7 @@
 
             {{#errors}}
                 <div>
-                    <h2>
-                        {{#occuredTimes}}<span class="in-circle">{{occuredTimes}}</span>{{/occuredTimes}}
+                    <h2 class="badge" {{#occuredTimes}}data-badge="{{occuredTimes}}"{{/occuredTimes}}>
                         {{#fake}}[fake] {{/fake}}{{message}}
                     </h2>
                     {{url}}
