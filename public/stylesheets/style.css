@@ -48,7 +48,5 @@ ul li {
     height: 24px;
     text-align: center;
     line-height: 24px;
-    border-radius: 50%;
-    box-shadow: 0 0 2px #333;
     min-width: 25px;
 }
