@@ -24,7 +24,7 @@ var ErrorSchema = new mongoose.Schema({
         type: Date,
         required: true,
         index: true,
-        default: (+new Date())
+        default: (+new Date()) // cached
     }
 });
 

@@ -42,7 +42,8 @@ var express = require('express'),
                 url: url,
                 line: +line,
                 beforeLoad: !!+beforeLoad,
-                occuredTimes: 0
+                occuredTimes: 0,
+                createdAt: (+new Date())
             });
 
             if (symbol) {
