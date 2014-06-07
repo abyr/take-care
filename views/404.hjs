@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
+</head>
+<body>
     <div>
         <h1>404</h1>
         <div>
-            Hah?
+            {{#message}}{{message}}{{/message}}
+            {{/message}}Hah?{{/message}}
         </div>
     </div>
 </body>

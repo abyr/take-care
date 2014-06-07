@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <div>
-        <h1>500</h1>
-        <div>
-            Sorry!
-        </div>
-    </div>
+</head>
+<body>
+    <h1>
+        {{#message}}
+            {{message}}
+        {{/message}}
+        {{^message}}500{{/message}}
+    </h1>
+    {{#stack}}
+        <pre>{{stack}}</pre>
+    {{/stack}}
 </body>
 </html>
