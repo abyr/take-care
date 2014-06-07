@@ -19,6 +19,7 @@ Pagination.prototype.navigate = function(page, limit, pages) {
     this.page = page || this.page;
     this.limit = limit || this.limit;
     this.skip = (this.page -1) * this.limit;
+
     this.pages = pages || this.pages;
 
     this._refresh(); // add navs
@@ -26,7 +27,6 @@ Pagination.prototype.navigate = function(page, limit, pages) {
 }
 
 Pagination.prototype._refresh = function() {
-    console.log(this.page, this.pages, this.limit);
     this.navs = [];
     this.navs.push({
         title: '<<',
