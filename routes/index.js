@@ -2,37 +2,31 @@ var express = require('express'),
     async = require('async'),
     moment = require('moment'),
     _ = require('lodash'),
-
     router = express.Router(),
+    ff = require('../helpers/featureFlags'),
     Period = require('../helpers/period'),
+    Pagination = require('../helpers/pagination'),
     ErrorLog = require("../models/error").ErrorLog;
 
-router.get('/', function(req, res) {
-
+router.get('/', function(req, res, next) {
     var period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
+        limit = +req.body.limit || +req.query.limit || 1,
         pages,
         filters = {
             createdAt: {
                 $gt: Period.getStartOf(period)
             }
         },
-        pagination = {
-            skip: 0,
-            limit: 10,
-            sort: {
-                createdAt: -1
-            }
-        },
+        pagination = false,
         periods = ['day', 'week', 'month', 'year'],
-        paginationItems = [],
         feedback;
 
     async.series({
         count: function(callback) {
             ErrorLog.count(filters, function(err, count) {
                 if (err) {
-                    return res.render('error', err);
+                    return next(err);
                 }
                 callback(null, count);
             });
@@ -58,7 +52,8 @@ router.get('/', function(req, res) {
         if (!results.count) {
             return res.render('index', feedback);
         }
-        pages = Math.ceil(results.count / pagination.limit);
+
+        pages = Math.ceil(results.count / limit);
         if (page > pages) {
             feedback.title = 'Page not found';
             if (err) {
@@ -66,25 +61,9 @@ router.get('/', function(req, res) {
             }
         }
 
-        paginationItems.push({
-            title: '<<',
-            page: 1,
+        pagination = (new Pagination(page, limit, pages)).setSort({
+            createdAt: -1
         });
-        paginationItems.push({
-            title: 'prev',
-            page: +page-1
-        });
-        paginationItems.push({
-            title: 'next',
-            page: +page+1
-        });
-        paginationItems.push({
-            title: '>>',
-            page: +pages
-        });
-
-        // skip as filter
-        pagination.skip = pagination.limit * (page - 1);
 
         ErrorLog.find(filters, null, pagination, function(err, errorLogs) {
             if (err) {
@@ -109,14 +88,13 @@ router.get('/', function(req, res) {
 
             }, function(err, results) {
 
-                pagination.page = page;
-                pagination.pages = pages;
+                if (ff('pagination')) {
+                    pagination.items = _.each(pagination.navs, function(p) {
+                        p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
+                    });
+                    feedback.pagination = pagination;
+                }
 
-                pagination.items = _.each(paginationItems, function(p) {
-                    p.active = (p.page === page || p.page < 1 || p.page > pages);
-                });
-
-                feedback.pagination = pagination;
                 feedback.errors = errorLogs;
                 res.render('index', feedback);
             });

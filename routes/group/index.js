@@ -2,34 +2,28 @@ var express = require('express'),
     async = require('async'),
     moment = require('moment'),
     _ = require('lodash'),
-
     router = express.Router(),
+    ff = require('../../helpers/featureFlags'),
+    Pagination = require('../../helpers/pagination'),
     Period = require('../../helpers/period'),
     ErrorLog = require("../../models/error").ErrorLog;
 
-router.get('/:group', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
 
     // FIXME: duplicated code
 
-    var group = req.params.group,
+    var id = req.params.id,
         period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
         pages,
         filters,
-        pagination = {
-            skip: 0,
-            limit: 10,
-            sort: {
-                createdAt: -1
-            }
-        },
+        pagination,
         periods = ['day', 'week', 'month', 'year'],
-        paginationItems = [],
         feedback;
 
     async.series({
         errorLog: function(callback) {
-            ErrorLog.findById(group, function(err, error) {
+            ErrorLog.findById(id, function(err, error) {
                 if (err) {
                     return res.render('error', err);
                 }
@@ -72,21 +66,8 @@ router.get('/:group', function(req, res, next) {
             }
         }
 
-        paginationItems.push({
-            title: '<<',
-            page: 1,
-        });
-        paginationItems.push({
-            title: 'prev',
-            page: +page-1
-        });
-        paginationItems.push({
-            title: 'next',
-            page: +page+1
-        });
-        paginationItems.push({
-            title: '>>',
-            page: +pages
+        pagination = (new Pagination(page, limit, pages)).setSort({
+            createdAt: -1
         });
 
         // skip as filter
@@ -115,12 +96,12 @@ router.get('/:group', function(req, res, next) {
 
             }, function(err, results) {
 
-                pagination.page = page;
-                pagination.pages = pages;
-
-                pagination.items = _.each(paginationItems, function(p) {
-                    p.active = (p.page === page || p.page < 1 || p.page > pages);
-                });
+                if (ff('pagination')) {
+                    pagination.items = _.each(pagination.navs, function(p) {
+                        p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
+                    });
+                    feedback.pagination = pagination;
+                }
 
                 feedback.pagination = pagination;
                 feedback.errors = errorLogs;
