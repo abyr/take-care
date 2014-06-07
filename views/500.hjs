@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div>
+        <h1>500</h1>
+        <div>
+            Sorry!
+        </div>
+    </div>
+</body>
+</html>
