@@ -61,7 +61,7 @@ var express = require('express'),
     };
 
 // record new error log
-router.post('/', function(req, res) {
+router.post('/', function(req, res, next) {
 
     var message = req.body.message,
         errorLog,
@@ -89,10 +89,10 @@ router.post('/', function(req, res) {
     errorLog && errorLogs.push(errorLogs);
 
     if (!errorLogs.length) {
-        return res.send(400, {
-            error: true,
+        return next({
+            status: 400,
             message: 'No errors to save'
-        })
+        });
     }
 
     // save several errors
@@ -108,17 +108,14 @@ router.post('/', function(req, res) {
         });
     }, function(err) {
         if (err) {
-            return res.send(500, {
-                error: true,
-                message: err.message
-            });
+            return next(err);
         }
         // all saved
         res.send(201, JSON.stringify(errorLogs));
     });
 });
 
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
     var period = req.body.period || req.query.period || 'day',
         filters = {
             createdAt: {
@@ -137,7 +134,7 @@ router.get('/', function(req, res) {
                 message: err.message
             });
         }
-        res.send(200, data);
+        res.json(data);
     });
 });
 
