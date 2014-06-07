@@ -1,6 +1,5 @@
 var express = require('express'),
     async = require('async'),
-    moment = require('moment'),
     _ = require('lodash'),
     router = express.Router(),
     ff = require('../../helpers/featureFlags'),
@@ -15,86 +14,84 @@ router.get('/:id', function(req, res, next) {
     var id = req.params.id,
         period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
-        pages,
-        filters,
+        limit = +req.body.limit || +req.query.limit || 1,
+        pages = 1,
         pagination,
-        periods = ['day', 'week', 'month', 'year'],
+        // db
+        query,
+        queryFilters,
+        // response
         feedback;
 
     async.series({
         errorLog: function(callback) {
             ErrorLog.findById(id, function(err, error) {
-                if (err) {
-                    return res.render('error', err);
-                }
+                // error
+                if (err) return callback(err);
+                // success
                 callback(null, error);
             });
         }
     }, function(err, results) {
-        if (err) {
-            return res.render('error', err);
-        }
+        // error
+        if (err) return next(err);
 
+        // response feed
         feedback = {
             title: 'Error Group :: Take Care',
             errors: [],
             period: period,
-            periods: _.map(periods, function(p) {
-                return {
-                    title: p,
-                    active: (p === period)
-                }
-            }),
+            periods: Period.mapActive(period),
             error: results.errorLog,
             message: results.errorLog.message
         };
 
-        filters = {
-            message: results.errorLog.message
-        };
-
-        // not found
+        // empty
         if (!results.count) {
             return res.render('group', feedback);
         }
 
-        pages = Math.ceil(results.count / pagination.limit);
+        pages = Math.ceil(results.count / limit);
+
+        // 404
         if (page > pages) {
-            feedback.title = 'Page not found';
-            if (err) {
-                return res.render('error', err);
-            }
+            return next({ status: 404, message: 'Page not found' });
         }
 
         pagination = (new Pagination(page, limit, pages)).setSort({
             createdAt: -1
         });
 
+
         // skip as filter
         pagination.skip = pagination.limit * (page - 1);
 
-        ErrorLog.find(filters, null, pagination, function(err, errorLogs) {
-            if (err) {
-                return res.render('error', err);
-            }
+        query = {
+            message: results.errorLog.message
+        };
+        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit')
+
+        ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
+            // error
+            if (err) return next(err);
 
             async.each(errorLogs, function(errorLog, callback) {
-
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
 
                 ErrorLog.count({
                     message: errorLog.message
                 }, function(err, count) {
-                    if (err) {
-                        return res.render('error', err);
-                    }
-                    errorLog.occuredTimes = count;
+                    // error
+                    if (err) return callback(err);
 
+                    errorLog.occuredTimes = count;
                     callback(null, errorLog);
                 });
 
             }, function(err, results) {
+                // error
+                if (err) return next(err);
 
                 if (ff('pagination')) {
                     pagination.items = _.each(pagination.navs, function(p) {
@@ -105,13 +102,10 @@ router.get('/:id', function(req, res, next) {
 
                 feedback.pagination = pagination;
                 feedback.errors = errorLogs;
-
                 res.render('group', feedback);
             });
         });
-
     });
-
 });
 
 module.exports = router;
