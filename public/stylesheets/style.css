@@ -26,7 +26,7 @@ ul li {
 .b-group > .active {
     color: #444;
     text-decoration: none;
-    cursor: none;
+    cursor: default;
 }
 .hidden {
     display: none;
@@ -34,7 +34,6 @@ ul li {
 .faded {
     opacity: 0.3;
 }
-
 .badge {
    position:relative;
 }

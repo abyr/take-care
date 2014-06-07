@@ -25,6 +25,7 @@ db.once('open', function callback() {
 });
 
 var routes = require('./routes/index'),
+    routeGroup = require('./routes/group/index');
     routeErrors = require('./routes/errors'),
     routeApi = require('./routes/api/index');
 
@@ -40,6 +41,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/group', routeGroup);
 app.use('/errors', routeErrors);
 app.use('/api', routeApi);
 

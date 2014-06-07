@@ -4,19 +4,18 @@ var express = require('express'),
     _ = require('lodash'),
 
     router = express.Router(),
-    Period = require('../helpers/period'),
-    ErrorLog = require("../models/error").ErrorLog;
+    Period = require('../../helpers/period'),
+    ErrorLog = require("../../models/error").ErrorLog;
 
-router.get('/', function(req, res) {
+router.get('/:group', function(req, res, next) {
 
-    var period = req.body.period || req.query.period || 'day',
+    // FIXME: duplicated code
+
+    var group = req.params.group,
+        period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
         pages,
-        filters = {
-            createdAt: {
-                $gt: Period.getStartOf(period)
-            }
-        },
+        filters,
         pagination = {
             skip: 0,
             limit: 10,
@@ -29,21 +28,21 @@ router.get('/', function(req, res) {
         feedback;
 
     async.series({
-        count: function(callback) {
-            ErrorLog.count(filters, function(err, count) {
+        errorLog: function(callback) {
+            ErrorLog.findById(group, function(err, error) {
                 if (err) {
                     return res.render('error', err);
                 }
-                callback(null, count);
+                callback(null, error);
             });
         }
-
     }, function(err, results) {
         if (err) {
             return res.render('error', err);
         }
+
         feedback = {
-            title: 'Errors :: Take Care',
+            title: 'Error Group :: Take Care',
             errors: [],
             period: period,
             periods: _.map(periods, function(p) {
@@ -51,13 +50,20 @@ router.get('/', function(req, res) {
                     title: p,
                     active: (p === period)
                 }
-            })
-        }
+            }),
+            error: results.errorLog,
+            message: results.errorLog.message
+        };
+
+        filters = {
+            message: results.errorLog.message
+        };
 
         // not found
         if (!results.count) {
-            return res.render('index', feedback);
+            return res.render('group', feedback);
         }
+
         pages = Math.ceil(results.count / pagination.limit);
         if (page > pages) {
             feedback.title = 'Page not found';
@@ -118,10 +124,13 @@ router.get('/', function(req, res) {
 
                 feedback.pagination = pagination;
                 feedback.errors = errorLogs;
-                res.render('index', feedback);
+
+                res.render('group', feedback);
             });
         });
+
     });
+
 });
 
 module.exports = router;

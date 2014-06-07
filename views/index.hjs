@@ -78,6 +78,10 @@
                     {{#occuredTimes}}
                         Occured {{occuredTimes}} times
                     {{/occuredTimes}}
+                    <br/>
+                    {{#occuredTimes}}
+                        <a href="/group/{{_id}}">similar</a>
+                    {{/occuredTimes}}
                 </div>
             {{/errors}}
 
