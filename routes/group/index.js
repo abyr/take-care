@@ -27,23 +27,25 @@ router.get('/:id', function(req, res, next) {
         errorLog: function(callback) {
             ErrorLog.findById(id, function(err, error) {
                 // error
-                if (err) return callback(err);
+                if (err) {
+                    return callback(err);
+                }
                 // success
                 callback(null, error);
             });
         }
     }, function(err, results) {
         // error
-        if (err) return next(err);
-
+        if (err) {
+            return next(err);
+        }
         // response feed
         feedback = {
             title: 'Error Group :: Take Care',
             errors: [],
             period: period,
             periods: Period.mapActive(period),
-            error: results.errorLog,
-            message: results.errorLog.message
+            errorLog: results.errorLog
         };
 
         // empty
@@ -52,7 +54,6 @@ router.get('/:id', function(req, res, next) {
         }
 
         pages = Math.ceil(results.count / limit);
-
         // 404
         if (page > pages) {
             return next({ status: 404, message: 'Page not found' });
@@ -62,19 +63,19 @@ router.get('/:id', function(req, res, next) {
             createdAt: -1
         });
 
-
         // skip as filter
         pagination.skip = pagination.limit * (page - 1);
 
         query = {
             message: results.errorLog.message
         };
-        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit')
+        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
         ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
             // error
-            if (err) return next(err);
-
+            if (err) {
+                return next(err);
+            }
             async.each(errorLogs, function(errorLog, callback) {
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
@@ -83,16 +84,18 @@ router.get('/:id', function(req, res, next) {
                     message: errorLog.message
                 }, function(err, count) {
                     // error
-                    if (err) return callback(err);
-
+                    if (err) {
+                        return callback(err);
+                    }
                     errorLog.occuredTimes = count;
                     callback(null, errorLog);
                 });
 
-            }, function(err, results) {
+            }, function(err) {
                 // error
-                if (err) return next(err);
-
+                if (err) {
+                    return next(err);
+                }
                 if (ff('pagination')) {
                     pagination.items = _.each(pagination.navs, function(p) {
                         p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);

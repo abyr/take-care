@@ -44,7 +44,7 @@ app.use('/group', routeGroup);
 app.use('/api', routeApi);
 
 /// catch 404 and forwarding to error handler
-app.use(function(req, res, next) {
+app.use(function(req, res) {
     var err = new Error('Not Found');
     err.status = 404;
     return res.render('404', err);
@@ -52,13 +52,13 @@ app.use(function(req, res, next) {
 
 // development error handler
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function(err, req, res) {
         res.status(err.status || 500);
         res.render('500', err);
     });
 }
 // production error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
     res.status(err.status || 500);
     res.render('500', {
         message: err.message,

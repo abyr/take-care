@@ -1,11 +1,9 @@
 var express = require('express'),
     router = express.Router(),
-    moment = require('moment'),
     _ = require('lodash'),
     async = require('async'),
     Period = require('../../helpers/period'),
     ErrorLog = require("../../models/error").ErrorLog,
-    defaultLimit = 10,
     methods = {
 
         // process indexed data using index
@@ -13,7 +11,7 @@ var express = require('express'),
 
             var body = req.body,
                 i = index,
-                message, url, lineNumber, symbolNumber, browser, beforeLoad, fake;
+                message, url, browser, beforeLoad, fake;
 
             if (typeof i !== 'undefined') { // allow zero index
                 fake = (body.fake && body.fake[i]) ? !!body.fake : false;
@@ -21,9 +19,7 @@ var express = require('express'),
                 message = body.message[i];
                 url = body.url[i];
                 line = body.lineNumber[i];
-                symbol = (body.symbolNumber && body.symbolNumber[i])
-                    ? +body.symbolNumber[i]
-                    : null;
+                symbol = (body.symbolNumber && body.symbolNumber[i]) ? +body.symbolNumber[i]: null;
                 browser = body.browser[i];
                 beforeLoad = body.beforeLoad[i];
 
@@ -41,7 +37,7 @@ var express = require('express'),
                 message: message,
                 url: url,
                 line: +line,
-                beforeLoad: !!+beforeLoad,
+                beforeLoad: Boolean(+beforeLoad),
                 occuredTimes: 0,
                 createdAt: (+new Date())
             });
@@ -86,7 +82,9 @@ router.post('/', function(req, res, next) {
     }
 
     // save single error
-    errorLog && errorLogs.push(errorLogs);
+    if (errorLog) {
+        errorLogs.push(errorLogs);
+    }
 
     if (!errorLogs.length) {
         return next({
@@ -98,13 +96,13 @@ router.post('/', function(req, res, next) {
     // save several errors
     async.each(errorLogs, function(errorLog, callback) {
         // save single error
-        errorLog && errorLog.save(function(err) {
+        errorLog.save(function(err) {
             if (err) {
                 // error on save
                 return callback(err);
             }
             // saved
-            callback(null, errorLog);
+            return callback(null, errorLog);
         });
     }, function(err) {
         if (err) {
@@ -129,10 +127,7 @@ router.get('/', function(req, res, next) {
         }
     }, function(err, data) {
         if (err) {
-            return res.send(500, {
-                error: true,
-                message: err.message
-            });
+            return next(err);
         }
         res.json(data);
     });
@@ -153,14 +148,14 @@ router.get('/count', function(req, res) {
                 message: err.message
             });
         }
-        res.send(200, {
+        res.json({
             count: count
         });
     });
 });
 
 // clear all logs before the period ('day', 'week', 'month', etc.)
-router.delete('/', function(req, res) {
+router.delete('/', function(req, res, next) {
     var period = req.body.period || req.query.period || 'year',
         filters = {
             createdAt: {
@@ -170,25 +165,20 @@ router.delete('/', function(req, res) {
 
     ErrorLog.find(filters, function(err, data) {
         if (err) {
-            return res.send(500, {
-                error: true,
-                message: err.message
-            });
+            return next(err);
         }
-        if (data) {
-            _.each(data, function(doc) {
-                doc.remove(function(err, data) {
-                    if (err) {
-                        return res.send(500, {
-                            error: true,
-                            message: err.message
-                        });
-                    }
-                });
+        _.each(data, function(doc) {
+            doc.remove(function(err) {
+                if (err) {
+                    return res.send(500, {
+                        error: true,
+                        message: err.message
+                    });
+                }
             });
-        }
-        // todo async response
-        res.send(200, {
+        });
+
+        res.json({
             count: data.length || 0
         });
     });

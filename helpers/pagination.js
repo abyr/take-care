@@ -8,12 +8,12 @@ var Pagination = function(page, limit, pages) {
 
     this.navigate(page, limit, pages);
     return this;
-}
+};
 
 Pagination.prototype.setSort = function(sort) {
     this.sort = sort || this.sort;
     return this;
-}
+};
 
 Pagination.prototype.navigate = function(page, limit, pages) {
     this.page = page || this.page;
@@ -24,7 +24,7 @@ Pagination.prototype.navigate = function(page, limit, pages) {
 
     this._refresh(); // add navs
     return this;
-}
+};
 
 Pagination.prototype._refresh = function() {
     this.navs = [];

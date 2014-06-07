@@ -32,4 +32,4 @@ var ErrorLog = mongoose.model("ErrorLog", ErrorSchema);
 
 module.exports = {
     ErrorLog: ErrorLog
-}
+};

@@ -26,15 +26,18 @@ router.get('/', function(req, res, next) {
     async.series({
         count: function(callback) {
             ErrorLog.count(query, function(err, count) {
-                if (err) return callback(err);
+                if (err) {
+                    return callback(err);
+                }
                 callback(null, count);
             });
         }
 
     }, function(err, results) {
         // error
-        if (err) return next(err);
-
+        if (err) {
+            return next(err);
+        }
         pages = Math.ceil(results.count / limit);
         // 404
         if (page > pages) {
@@ -46,7 +49,7 @@ router.get('/', function(req, res, next) {
             errors: [],
             period: period,
             periods: Period.mapActive(period)
-        }
+        };
 
         // empty
         if (!results.count) {
@@ -57,11 +60,13 @@ router.get('/', function(req, res, next) {
             createdAt: -1
         });
 
-        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit')
+        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
         ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
             // error
-            if (err) return next(err);
+            if (err) {
+                return next(err);
+            }
 
             async.each(errorLogs, function(errorLog, callback) {
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
@@ -71,16 +76,18 @@ router.get('/', function(req, res, next) {
                     message: errorLog.message
                 }, function(err, count) {
                     // error
-                    if (err) return callback(err);
-                    // success
+                    if (err) {
+                        return callback(err);
+                    }
                     errorLog.occuredTimes = count;
                     callback(null, errorLog);
                 });
 
-            }, function(err, results) {
+            }, function(err) {
                 // error
-                if (err) return next(err);
-
+                if (err) {
+                    return next(err);
+                }
                 if (ff('pagination')) {
                     pagination.items = _.each(pagination.navs, function(p) {
                         p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
