@@ -1,0 +1,9 @@
+{
+    "indent": 4,
+    "curly": true,
+    "camelcase": true,
+    "newcap": true,
+    "unused": true,
+    "trailing": true,
+    "maxlen": 120
+}
