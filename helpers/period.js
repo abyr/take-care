@@ -1,7 +1,8 @@
 var period = {},
+    _ = require('lodash'),
     moment = require('moment');
 
-// the period ('day', 'week', 'month', etc.
+period.periods = ['day', 'week', 'month', 'year'];
 
 // get first date (ts) of the period ('day', 'month', etc.)
 period.getStartOf = function(period) {
@@ -21,6 +22,16 @@ period.daytime = function(date) {
 // xx time ago
 period.ago = function(date) {
     return moment(date).fromNow();
+}
+
+// periods : title, active
+period.mapActive = function(period) {
+    return _.map(this.periods, function(p) {
+        return {
+            title: p,
+            active: (p === period)
+        }
+    });
 }
 
 module.exports = period;
