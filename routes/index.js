@@ -1,6 +1,5 @@
 var express = require('express'),
     async = require('async'),
-    moment = require('moment'),
     _ = require('lodash'),
     router = express.Router(),
     ff = require('../helpers/featureFlags'),
@@ -11,82 +10,76 @@ var express = require('express'),
 router.get('/', function(req, res, next) {
     var period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
-        limit = +req.body.limit || +req.query.limit || 1,
-        pages,
-        filters = {
+        limit = +req.body.limit || +req.query.limit || 10,
+        pages = 1,
+        pagination,
+        // db
+        query = {
             createdAt: {
                 $gt: Period.getStartOf(period)
             }
         },
-        pagination = false,
-        periods = ['day', 'week', 'month', 'year'],
+        queryFilters,
+        // response
         feedback;
 
     async.series({
         count: function(callback) {
-            ErrorLog.count(filters, function(err, count) {
-                if (err) {
-                    return next(err);
-                }
+            ErrorLog.count(query, function(err, count) {
+                if (err) return callback(err);
                 callback(null, count);
             });
         }
 
     }, function(err, results) {
-        if (err) {
-            return res.render('error', err);
+        // error
+        if (err) return next(err);
+
+        pages = Math.ceil(results.count / limit);
+        // 404
+        if (page > pages) {
+            return next({ status: 404, message: 'Page not found' });
         }
+
         feedback = {
             title: 'Errors :: Take Care',
             errors: [],
             period: period,
-            periods: _.map(periods, function(p) {
-                return {
-                    title: p,
-                    active: (p === period)
-                }
-            })
+            periods: Period.mapActive(period)
         }
 
-        // not found
+        // empty
         if (!results.count) {
             return res.render('index', feedback);
-        }
-
-        pages = Math.ceil(results.count / limit);
-        if (page > pages) {
-            feedback.title = 'Page not found';
-            if (err) {
-                return res.render('error', err);
-            }
         }
 
         pagination = (new Pagination(page, limit, pages)).setSort({
             createdAt: -1
         });
 
-        ErrorLog.find(filters, null, pagination, function(err, errorLogs) {
-            if (err) {
-                return res.render('error', err);
-            }
+        queryFilters = _.pick(pagination, 'skip', 'sort', 'limit')
+
+        ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
+            // error
+            if (err) return next(err);
 
             async.each(errorLogs, function(errorLog, callback) {
-
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
 
                 ErrorLog.count({
                     message: errorLog.message
                 }, function(err, count) {
-                    if (err) {
-                        return res.render('error', err);
-                    }
+                    // error
+                    if (err) return callback(err);
+                    // success
                     errorLog.occuredTimes = count;
-
                     callback(null, errorLog);
                 });
 
             }, function(err, results) {
+                // error
+                if (err) return next(err);
 
                 if (ff('pagination')) {
                     pagination.items = _.each(pagination.navs, function(p) {
