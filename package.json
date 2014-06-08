@@ -1,25 +1,32 @@
 {
-    "name": "take-care",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "start": "node ./bin/www"
-    },
-    "dependencies": {
-        "express": "~4.0.0",
-        "static-favicon": "~1.0.0",
-        "morgan": "~1.0.0",
-        "cookie-parser": "~1.0.1",
-        "body-parser": "~1.0.0",
-        "debug": "~0.7.4",
-        "hjs": "~0.0.6",
-        "mongoose": "^3.8.8",
-        "lodash": "^2.4.1",
-        "moment": "^2.6.0",
-        "async": "^0.9.0"
-    },
-    "devDependencies": {
-        "grunt": "^0.4.5",
-        "grunt-contrib-jshint": "^0.10.0"
-    }
+  "name": "take-care",
+  "description": "Log errors",
+  "homepage": "",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "express": "~4.0.0",
+    "static-favicon": "~1.0.0",
+    "morgan": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "body-parser": "~1.0.0",
+    "debug": "~0.7.4",
+    "hjs": "~0.0.6",
+    "mongoose": "^3.8.8",
+    "lodash": "^2.4.1",
+    "moment": "^2.6.0",
+    "async": "^0.9.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-nodeunit": "^0.4.0",
+    "docco": "^0.6.3",
+    "grunt-docco": "^0.3.3",
+    "yuidocjs": "^0.3.50",
+    "grunt-contrib-yuidoc": "^0.5.2"
+  }
 }
