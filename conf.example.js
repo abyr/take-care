@@ -1,4 +1,4 @@
-var conf = {
+var config = {
     app: {
         port: 3000
     },
@@ -7,4 +7,4 @@ var conf = {
     }
 };
 
-module.exports = conf;
+module.exports = config;
