@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Take-care by abyr</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Take-care</h1>
+        <p>Log error</p>
+        <p class="view"><a href="https://github.com/abyr/take-care">View the Project on GitHub <small>abyr/take-care</small></a></p>
+        <ul>
+          <li><a href="https://github.com/abyr/take-care/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/abyr/take-care/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/abyr/take-care">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="take-care" class="anchor" href="#take-care"><span class="octicon octicon-link"></span></a>Take care</h1>
+
+<p>Save the errors that you want to <a href="https://github.com/abyr/take-care">take care</a>.</p>
+
+<hr><h2>
+<a name="the-idea-is-to-have" class="anchor" href="#the-idea-is-to-have"><span class="octicon octicon-link"></span></a>The idea is to have:</h2>
+
+<ul>
+<li>free error tracker</li>
+<li>background error logger</li>
+<li>errors browsing</li>
+</ul><h2>
+<a name="you-need-next-things" class="anchor" href="#you-need-next-things"><span class="octicon octicon-link"></span></a>You need next things:</h2>
+
+<ol>
+<li>
+<strong>NPM</strong>, NodeJS installed</li>
+<li>
+<strong>MongoDB</strong> (local one or maybe <a href="">mongohq</a>, <a href="">monngolab</a> for small ideas in development stage).</li>
+<li>
+<strong>Error logger</strong> on your side.</li>
+</ol><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>The server</p>
+
+<pre><code>git clone git@github.com:abyr/take-care.git
+</code></pre>
+
+<p>Install dependencies</p>
+
+<pre><code>cd take-care
+npm install
+</code></pre>
+
+<p>Create config</p>
+
+<pre><code>cp conf.example.js conf.js
+</code></pre>
+
+<p>Configure DB connection</p>
+
+<pre><code>vim conf.js
+</code></pre>
+
+<p>For example, you can use <strong>MongoHQ</strong> connection like this</p>
+
+<pre><code>db: {
+    connection: 'mongodb://[user]:[password]@oceanic.mongohq.com:10031/[dbname]'
+}
+</code></pre>
+
+<h2>
+<a name="ready-to-run" class="anchor" href="#ready-to-run"><span class="octicon octicon-link"></span></a>Ready to run</h2>
+
+<pre><code>npm start
+</code></pre>
+
+<h2>
+<a name="add-error-logger-on-your-side" class="anchor" href="#add-error-logger-on-your-side"><span class="octicon octicon-link"></span></a>Add error logger on your side</h2>
+
+<h2>
+<a name="error-loggers-available" class="anchor" href="#error-loggers-available"><span class="octicon octicon-link"></span></a>Error loggers available:</h2>
+
+<p><strong>[in progress]</strong>
+Track JS errors with <a href="https://github.com/abyr/take-care-client-js">Take care JS client</a>.</p>
+
+<h2>
+<a name="read-more-in-progress" class="anchor" href="#read-more-in-progress"><span class="octicon octicon-link"></span></a>Read more [in progress]</h2>
+
+<p><strong>[in progress]</strong>
+<a href="https://github.com/abyr/take-care/wiki">Wiki page</a></p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/abyr">abyr</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
