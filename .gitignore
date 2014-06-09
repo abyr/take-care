@@ -3,7 +3,7 @@ logs
 *.log
 
 # Settings
-conf.js
+config.js
 ff.json
 
 # Runtime data
