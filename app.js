@@ -1,3 +1,4 @@
+/* jshint unused: false */
 var express = require('express'),
     mongoose = require('mongoose'),
     path = require('path'),
