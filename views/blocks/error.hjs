@@ -37,7 +37,7 @@
         <div>
             {{^hideDetailsLink}}
                 {{#occuredTimes}}
-                    <a href="/group/{{_id}}">Details</a>
+                    <a href="/details/{{_id}}">Details</a>
                 {{/occuredTimes}}
             {{/hideDetailsLink}}
         </div>

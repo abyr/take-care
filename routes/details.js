@@ -2,10 +2,10 @@ var express = require('express'),
     async = require('async'),
     _ = require('lodash'),
     router = express.Router(),
-    ff = require('../../helpers/ff'),
-    Pagination = require('../../helpers/pagination'),
-    Period = require('../../helpers/period'),
-    ErrorLog = require("../../models/error").ErrorLog;
+    ff = require('../helpers/ff'),
+    Pagination = require('../helpers/pagination'),
+    Period = require('../helpers/period'),
+    ErrorLog = require("../models/error").ErrorLog;
 
 router.get('/:id', function(req, res, next) {
 
@@ -99,7 +99,7 @@ router.get('/:id', function(req, res, next) {
                 pages = Math.ceil(errorLog.occuredTimes / limit);
                 // 404
                 if (page > pages) {
-                    return res.render('group', feedback);
+                    return res.render('details', feedback);
                 }
 
                 pagination.navigate(page, limit, pages);
@@ -115,7 +115,7 @@ router.get('/:id', function(req, res, next) {
                 feedback.errors = errorLogs;
                 feedback.errorLog = [errorLog];
 
-                res.render('group', feedback);
+                res.render('details', feedback);
             });
         });
     });

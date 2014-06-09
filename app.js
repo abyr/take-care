@@ -24,10 +24,6 @@ db.once('open', function callback() {
     console.log("mongodb has been started");
 });
 
-var routes = require('./routes/index'),
-    routeGroup = require('./routes/group/index');
-    routeApi = require('./routes/api/index');
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
@@ -39,9 +35,13 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/group', routeGroup);
-app.use('/api', routeApi);
+// routes
+var routes = require(path.join(__dirname, 'routes'));
+
+app.use('/', routes.activity);
+app.use('/activity', routes.activity);
+app.use('/details', routes.details);
+app.use('/api', routes.api);
 
 // catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
@@ -52,16 +52,22 @@ app.use(function(req, res, next) {
 
 // development error handler
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res) {
+    app.use(function(err, req, res, next) {
         if (err.status && err.status === 404) {
-            return res.render('404', err);
+            console.log(err);
+            return res.render('404', {
+                message: err.message
+            });
         }
         res.status(err.status || 500);
-        res.render('500', err);
+        res.render('500', {
+            message: err.message,
+            stack: err.stack
+        });
     });
 }
 // production error handler
-app.use(function(err, req, res) {
+app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('500', {
         message: err.message,
