@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{title}}</title>
+    <title>404 :: Take care</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
@@ -9,7 +10,7 @@
         <h1>404</h1>
         <div>
             {{#message}}{{message}}{{/message}}
-            {{/message}}Hah?{{/message}}
+            {{^message}}Hah?{{/message}}
         </div>
     </div>
 </body>
