@@ -3,14 +3,14 @@ var debug = require('debug')('my-application');
 var app = require('../app'),
     env = app.get('env'),
     ff = require('../helpers/ff'),
-    conf;
+    appConfig;
 
 if (env === 'development') {
     env = '';
 }
-conf = require('../conf' + ((env) ? '.' + env : ''));
+appConfig = require('../config' + ((env) ? '.' + env : ''));
 
-app.set('port', process.env.PORT || conf.app.port || 3000);
+app.set('port', process.env.PORT || appConfig.app.port || 3000);
 
 var server = app.listen(app.get('port'), function() {
     var message = 'Express server listening on port ' + server.address().port;
