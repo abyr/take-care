@@ -1,5 +1,9 @@
 var mongoose = require("mongoose");
 
+/**
+ * ErrorLog schema
+ * @type {mongoose}
+ */
 var ErrorSchema = new mongoose.Schema({
     message: { // text message
         type: String,
@@ -28,26 +32,15 @@ var ErrorSchema = new mongoose.Schema({
     }
 });
 
-var ErrorLog = mongoose.model("ErrorLog", ErrorSchema),
-    deferreds = {
-
-        // TODO: use deferred instead of callback
-
-        times: function(message, callback) {
-            ErrorLog.count({
-                message: message
-            }, function(err, count) {
-                // error
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, count);
-            });
-        }
-    };
-
-ErrorLog.deferreds = deferreds;
+/**
+ * Get how many time error was occured
+ * @param  {String}   message Error message
+ * @param  {Function} cb      Callback
+ */
+ErrorSchema.statics.getTimesCount = function(message, cb) {
+    this.count({ message: message }, cb);
+};
 
 module.exports = {
-    ErrorLog: ErrorLog
+    ErrorLog: mongoose.model("ErrorLog", ErrorSchema)
 };

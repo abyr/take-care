@@ -77,16 +77,15 @@ router.get('/', function(req, res, next) {
             }
 
             async.each(errorLogs, function(errorLog, callback) {
+                // dates
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
-
-                // times
-                ErrorLog.deferreds.times(errorLog.message, function(err, times) {
-                    // error
+                // occured times count
+                ErrorLog.getTimesCount(errorLog.message, function(err, count) {
                     if (err) {
-                        return next(err);
+                        return callback(err);
                     }
-                    errorLog.occuredTimes = times;
+                    errorLog.occuredTimes = count;
                     callback(null, errorLog);
                 });
 

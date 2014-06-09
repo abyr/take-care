@@ -27,21 +27,21 @@ router.get('/:id', function(req, res, next) {
     async.series({
         errorLog: function(callback) {
             ErrorLog.findById(id, function(err, errorLog) {
-                // error
                 if (err) {
                     return callback(err);
                 }
-                // times, ago
-                ErrorLog.deferreds.times(errorLog.message, function(err, times) {
-                    errorLog.datetime = Period.daytime(errorLog.createdAt);
-                    errorLog.ago = Period.ago(errorLog.createdAt);
-                    // error
+                // dates
+                errorLog.datetime = Period.daytime(errorLog.createdAt);
+                errorLog.ago = Period.ago(errorLog.createdAt);
+                // occured times count
+                ErrorLog.getTimesCount(errorLog.message, function(err, count) {
                     if (err) {
                         return callback(err);
                     }
-                    errorLog.occuredTimes = times;
+                    errorLog.occuredTimes = count;
                     callback(null, errorLog);
                 });
+
             });
         }
     }, function(err, results) {
