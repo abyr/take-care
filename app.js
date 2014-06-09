@@ -7,14 +7,14 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express(),
     env = app.get('env'),
-    conf;
+    appConfig;
 
 if (env === 'development') {
     env = '';
 }
-conf = require('./conf' + ((env) ? '.' + env : ''));
+appConfig = require('./config' + ((env) ? '.' + env : ''));
 
-mongoose.connect(conf.db.connection);
+mongoose.connect(appConfig.db.connection);
 
 var db = mongoose.connection;
 
@@ -32,7 +32,7 @@ var routes = require('./routes/index'),
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 
-app.use(favicon());
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
@@ -43,16 +43,19 @@ app.use('/', routes);
 app.use('/group', routeGroup);
 app.use('/api', routeApi);
 
-/// catch 404 and forwarding to error handler
-app.use(function(req, res) {
+// catch 404 and forwarding to error handler
+app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
-    return res.render('404', err);
+    next(err);
 });
 
 // development error handler
 if (app.get('env') === 'development') {
     app.use(function(err, req, res) {
+        if (err.status && err.status === 404) {
+            return res.render('404', err);
+        }
         res.status(err.status || 500);
         res.render('500', err);
     });
