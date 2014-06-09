@@ -14,24 +14,34 @@ router.get('/:id', function(req, res, next) {
     var id = req.params.id,
         period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
-        limit = +req.body.limit || +req.query.limit || 1,
+        limit = +req.body.limit || +req.query.limit || 10,
         pages = 1,
         pagination,
         // db
         query,
         queryFilters,
+        errorLog,
         // response
         feedback;
 
     async.series({
         errorLog: function(callback) {
-            ErrorLog.findById(id, function(err, error) {
+            ErrorLog.findById(id, function(err, errorLog) {
                 // error
                 if (err) {
                     return callback(err);
                 }
-                // success
-                callback(null, error);
+                // times, ago
+                ErrorLog.deferreds.times(errorLog.message, function(err, times) {
+                    errorLog.datetime = Period.daytime(errorLog.createdAt);
+                    errorLog.ago = Period.ago(errorLog.createdAt);
+                    // error
+                    if (err) {
+                        return callback(err);
+                    }
+                    errorLog.occuredTimes = times;
+                    callback(null, errorLog);
+                });
             });
         }
     }, function(err, results) {
@@ -39,33 +49,29 @@ router.get('/:id', function(req, res, next) {
         if (err) {
             return next(err);
         }
+
+        errorLog = results.errorLog;
+        // visibility
+        errorLog.hideSimilarLink = true;
+
         // response feed
         feedback = {
-            title: 'Error Group :: Take Care',
+            title: 'Details',
             errors: [],
             period: period,
-            periods: Period.mapActive(period),
-            errorLog: results.errorLog
+            periods: Period.mapActive(period)
         };
 
-        // empty
-        if (!results.count) {
-            return res.render('group', feedback);
-        }
-
-        pages = Math.ceil(results.count / limit);
-        // 404
-        if (page > pages) {
-            return next({ status: 404, message: 'Page not found' });
-        }
+        feedback.partials = {
+            error: 'blocks/error',
+            pagination: 'blocks/pagination',
+            'pagination-script': 'blocks/pagination-script',
+            filters: 'blocks/filters'
+        };
 
         pagination = (new Pagination(page, limit, pages)).setSort({
             createdAt: -1
         });
-
-        // skip as filter
-        pagination.skip = pagination.limit * (page - 1);
-
         query = {
             message: results.errorLog.message
         };
@@ -77,25 +83,27 @@ router.get('/:id', function(req, res, next) {
                 return next(err);
             }
             async.each(errorLogs, function(errorLog, callback) {
+                errorLog.isChild = true;
+                errorLog.hideDetailsLink = true;
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
 
-                ErrorLog.count({
-                    message: errorLog.message
-                }, function(err, count) {
-                    // error
-                    if (err) {
-                        return callback(err);
-                    }
-                    errorLog.occuredTimes = count;
-                    callback(null, errorLog);
-                });
+                callback(null, errorLog);
 
             }, function(err) {
                 // error
                 if (err) {
                     return next(err);
                 }
+
+                pages = Math.ceil(errorLog.occuredTimes / limit);
+                // 404
+                if (page > pages) {
+                    return res.render('group', feedback);
+                }
+
+                pagination.navigate(page, limit, pages);
+
                 if (ff('pagination')) {
                     pagination.items = _.each(pagination.navs, function(p) {
                         p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
@@ -105,6 +113,8 @@ router.get('/:id', function(req, res, next) {
 
                 feedback.pagination = pagination;
                 feedback.errors = errorLogs;
+                feedback.errorLog = [errorLog];
+
                 res.render('group', feedback);
             });
         });

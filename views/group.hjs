@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
+</head>
+<body>
     <div>
+        <a href="/">Take care</a>
+
         <h1>{{title}}</h1>
 
         <div>
-
-            {{message}}
-
+            {{#errorLog}}
+                {{> error}}
+            {{/errorLog}}
         </div>
 
+        <hr />
+
+        <h3>History</h3>
+
+        <div>{{> pagination}}</div>
+
+        <div>
+            {{^errors}}
+                No errors
+            {{/errors}}
+            {{#errors}}
+                {{> error}}
+            {{/errors}}
+        </div>
+
+        <div>{{> pagination}}</div>
     </div>
+
+    {{> pagination-script}}
 </body>
 </html>
