@@ -38,21 +38,29 @@ router.get('/', function(req, res, next) {
         if (err) {
             return next(err);
         }
-        pages = Math.ceil(results.count / limit);
-        // 404
-        if (page > pages) {
-            return next({ status: 404, message: 'Page not found' });
-        }
 
         feedback = {
-            title: 'Errors :: Take Care',
+            title: 'Activity',
             errors: [],
             period: period,
             periods: Period.mapActive(period)
         };
 
+        feedback.partials = {
+            error: 'blocks/error',
+            pagination: 'blocks/pagination',
+            'pagination-script': 'blocks/pagination-script',
+            filters: 'blocks/filters',
+        };
+
         // empty
         if (!results.count) {
+            return res.render('index', feedback);
+        }
+
+        pages = Math.ceil(results.count / limit);
+        // 404
+        if (page > pages) {
             return res.render('index', feedback);
         }
 
@@ -72,14 +80,13 @@ router.get('/', function(req, res, next) {
                 errorLog.datetime = Period.daytime(errorLog.createdAt);
                 errorLog.ago = Period.ago(errorLog.createdAt);
 
-                ErrorLog.count({
-                    message: errorLog.message
-                }, function(err, count) {
+                // times
+                ErrorLog.deferreds.times(errorLog.message, function(err, times) {
                     // error
                     if (err) {
-                        return callback(err);
+                        return next(err);
                     }
-                    errorLog.occuredTimes = count;
+                    errorLog.occuredTimes = times;
                     callback(null, errorLog);
                 });
 
@@ -96,6 +103,7 @@ router.get('/', function(req, res, next) {
                 }
 
                 feedback.errors = errorLogs;
+
                 res.render('index', feedback);
             });
         });
