@@ -1,0 +1,20 @@
+{{#pagination}}
+    <ul class="b-group b-group-line pagination">
+        {{^items}}
+            <li></li>
+        {{/items}}
+        {{#items}}
+            <li class="{{#active}} active{{/active}}">
+                {{#active}}
+                    <span>{{title}}</span>
+                {{/active}}
+                {{^active}}
+                    <span class="clickable" data-key="page" data-val="{{page}}">{{title}}</span>
+                {{/active}}
+            </li>
+        {{/items}}
+    </ul>
+    <span>
+        ({{page}} of {{pages}})
+    </span>
+{{/pagination}}

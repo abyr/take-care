@@ -1,0 +1,58 @@
+<script>
+    var prop,
+        filter,
+        params = {},
+        filters = (window.location.search || '?').substr(1).split('&'),
+        navs, el;
+
+    // search params to object
+    for (prop in filters) {
+        if (filters.hasOwnProperty(prop)) {
+            filter = filters[prop].split('=');
+            params[filter[0]] = filter[1];
+        }
+    }
+
+    var navigate = function() {
+        var force = this.getAttribute('data-force'),
+            key = this.getAttribute('data-key'),
+            value = this.getAttribute('data-val') || this.textContent;
+
+        params[key] =  value;
+
+        if (force) {
+            window.location.search = [key, value].join('=');
+        } else {
+
+            window.location.search = objToParamsStr(params);
+        }
+    };
+
+    var objToParamsStr = function(obj) {
+        var str = '',
+            p, v;
+
+        for (p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                v = obj[p];
+                if (v) {
+                    str += p + '=' + obj[p] + '&';
+                }
+            }
+        }
+        return str.substr(0, str.length-1);
+    }
+
+    // keep filters navigation
+    navs = document.querySelectorAll('.filters .clickable, .pagination .clickable');
+    if (navs.length) {
+        for (prop in navs) {
+            if (navs.hasOwnProperty(prop)) {
+                el = navs[prop];
+                if (el && typeof el.addEventListener === 'function') {
+                    el.addEventListener('click', navigate);
+                }
+            }
+        }
+    }
+</script>

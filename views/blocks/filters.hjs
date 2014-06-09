@@ -1,0 +1,16 @@
+<ul class="b-group b-group-line filters">
+    {{^periods}}
+        <li>No periods</li>
+    {{/periods}}
+
+    {{#periods}}
+        <li class="{{#active}}active{{/active}}">
+            {{#active}}
+                <span>{{title}}</span>
+            {{/active}}
+            {{^active}}
+                <span class="clickable" data-key="period" data-force="1">{{title}}</span>
+            {{/active}}
+        </li>
+    {{/periods}}
+</ul>

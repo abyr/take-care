@@ -1,0 +1,46 @@
+<div class="b-item">
+    {{^message}}
+        No description
+    {{/message}}
+    {{#message}}
+
+        {{^isChild}}<h2 {{/isChild}}
+        {{#isChild}}<div><b {{/isChild}}
+                class="badge" {{#occuredTimes}}data-badge="{{occuredTimes}}"{{/occuredTimes}} >
+                {{#fake}}[fake] {{/fake}}{{message}}
+        {{^isChild}}</h2>{{/isChild}}
+        {{#isChild}}</b></div>{{/isChild}}
+
+        <div>
+            {{url}}
+
+            {{#line}}
+                at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
+            {{/line}}
+
+            <sup>
+                {{#beforeLoad}}on load{{/beforeLoad}}
+                {{^beforeLoad}}after load{{/beforeLoad}}
+            </sup>
+        </div>
+
+        <div>
+            <span>{{#browser}}{{browser}}{{/browser}}</span>
+
+            <span>{{ago}}</span> <i class="faded">{{datetime}}</i>
+
+            {{#isNew}}
+                <span>New error. Never seen before</span>
+            {{/isNew}}
+        </div>
+
+        <div>
+            {{^hideDetailsLink}}
+                {{#occuredTimes}}
+                    <a href="/group/{{_id}}">Details</a>
+                {{/occuredTimes}}
+            {{/hideDetailsLink}}
+        </div>
+
+    {{/message}}
+</div>
