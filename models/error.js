@@ -28,7 +28,25 @@ var ErrorSchema = new mongoose.Schema({
     }
 });
 
-var ErrorLog = mongoose.model("ErrorLog", ErrorSchema);
+var ErrorLog = mongoose.model("ErrorLog", ErrorSchema),
+    deferreds = {
+
+        // TODO: use deferred instead of callback
+
+        times: function(message, callback) {
+            ErrorLog.count({
+                message: message
+            }, function(err, count) {
+                // error
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, count);
+            });
+        }
+    };
+
+ErrorLog.deferreds = deferreds;
 
 module.exports = {
     ErrorLog: ErrorLog
