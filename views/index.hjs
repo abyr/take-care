@@ -1,176 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
+</head>
+<body>
     <div>
         <h1>{{title}}</h1>
 
-        <div>
-            <ul class="b-group b-group-line filters">
-                {{^periods}}
-                    <li>No periods</li>
-                {{/periods}}
+        <div>{{> filters}}</div>
 
-                {{#periods}}
-                    <li class="{{#active}}active{{/active}}">
-                        {{#active}}
-                            <span>{{title}}</span>
-                        {{/active}}
-                        {{^active}}
-                            <span class="clickable" data-key="period" data-force="1">{{title}}</span>
-                        {{/active}}
-                    </li>
-                {{/periods}}
-            </ul>
-        </div>
+        <div>{{> pagination}}</div>
 
         <div>
-            {{#pagination}}
-                <ul class="b-group b-group-line pagination">
-                    {{^items}}
-                        <li></li>
-                    {{/items}}
-                    {{#items}}
-                        <li class="{{#active}} active{{/active}}">
-                            {{#active}}
-                                <span>{{title}}</span>
-                            {{/active}}
-                            {{^active}}
-                                <span class="clickable" data-key="page" data-val="{{page}}">{{title}}</span>
-                            {{/active}}
-                        </li>
-                    {{/items}}
-                </ul>
-                <span>
-                    ({{page}} of {{pages}})
-                </span>
-            {{/pagination}}
-
             {{^errors}}
-                <div>
-                    No data yet
-                </div>
+                No errors
             {{/errors}}
-
             {{#errors}}
-                <div>
-                    <h2 class="badge" {{#occuredTimes}}data-badge="{{occuredTimes}}"{{/occuredTimes}}>
-                        {{#fake}}[fake] {{/fake}}{{message}}
-                    </h2>
-                    {{url}}
-                    {{#line}}
-                        at {{line}}{{#symbol}}:{{symbol}}{{/symbol}}
-                    {{/line}}
-                    <sup>
-                        {{#beforeLoad}}on load{{/beforeLoad}}
-                        {{^beforeLoad}}after load{{/beforeLoad}}
-                    </sup>
-                    <br/>
-                    {{browser}}
-                    {{^browser}}browser{{/browser}}
-                    <br/>
-                    <span>{{ago}}</span> <i class="faded">{{datetime}}</i>
-                    <br/>
-                    {{^occuredTimes}}New error. Never seen before{{/occuredTimes}}
-                    {{#occuredTimes}}
-                        Occured {{occuredTimes}} times
-                    {{/occuredTimes}}
-                    <br/>
-                    {{#occuredTimes}}
-                        <a href="/group/{{_id}}">similar</a>
-                    {{/occuredTimes}}
-                </div>
+                {{> error}}
             {{/errors}}
-
-            <!-- copy -->
-            {{#pagination}}
-                <ul class="b-group b-group-line pagination">
-                    {{^items}}
-                        <li></li>
-                    {{/items}}
-                    {{#items}}
-                        <li class="{{#active}} active{{/active}}">
-                            {{#active}}
-                                <span>{{title}}</span>
-                            {{/active}}
-                            {{^active}}
-                                <span class="clickable" data-key="page" data-val="{{page}}">{{title}}</span>
-                            {{/active}}
-                        </li>
-                    {{/items}}
-                </ul>
-                <span>
-                    ({{page}} of {{pages}})
-                </span>
-            {{/pagination}}
-            <!-- copy end -->
-
         </div>
 
-
-
+        <div>{{> pagination}}</div>
     </div>
 
-    <script>
-        var prop,
-            filter,
-            params = {},
-            filters = (window.location.search || '?').substr(1).split('&'),
-            navs, el;
-
-        // search params to object
-        for (prop in filters) {
-            if (filters.hasOwnProperty(prop)) {
-                filter = filters[prop].split('=');
-                params[filter[0]] = filter[1];
-            }
-        }
-
-        var navigate = function() {
-            var force = this.getAttribute('data-force'),
-                key = this.getAttribute('data-key'),
-                value = this.getAttribute('data-val') || this.textContent;
-
-            params[key] =  value;
-
-            if (force) {
-                window.location.search = [key, value].join('=');
-            } else {
-
-                window.location.search = objToParamsStr(params);
-            }
-        };
-
-        var objToParamsStr = function(obj) {
-            var str = '',
-                p, v;
-
-            for (p in obj) {
-                if (obj.hasOwnProperty(p)) {
-                    v = obj[p];
-                    if (v) {
-                        str += p + '=' + obj[p] + '&';
-                    }
-                }
-            }
-            return str.substr(0, str.length-1);
-        }
-
-        // keep filters navigation
-        navs = document.querySelectorAll('.filters .clickable, .pagination .clickable');
-        if (navs.length) {
-            for (prop in navs) {
-                if (navs.hasOwnProperty(prop)) {
-                    el = navs[prop];
-                    (el && typeof el.addEventListener === 'function') && el.addEventListener('click', navigate);
-                }
-            }
-        }
-
-    </script>
-
-  </body>
+    {{> pagination-script}}
+</body>
 </html>
