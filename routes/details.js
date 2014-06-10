@@ -1,5 +1,4 @@
 var express = require('express'),
-    async = require('async'),
     _ = require('lodash'),
     router = express.Router(),
     Pagination = require('../helpers/pagination'),
@@ -17,25 +16,13 @@ router.get('/:id', function(req, res, next) {
         pages = 1,
         pagination,
         queryFilters,
-        errorLog,
         // response
         feedback;
 
-    async.series({
-        errorLog: function(cb) {
-            ErrorLog.findRichErrorById(id, function(err, richErrorLog) {
-                cb(err, richErrorLog);
-            });
-        }
-    }, function(err, results) {
-        // error
+    ErrorLog.findRichErrorById(id, function(err, errorLog) {
         if (err) {
             return next(err);
         }
-
-        // base error
-        errorLog = results.errorLog;
-
         // visibility
         errorLog.hideSimilarLink = true;
 

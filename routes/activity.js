@@ -1,8 +1,6 @@
 var express = require('express'),
-    async = require('async'),
     _ = require('lodash'),
     router = express.Router(),
-    ff = require('../helpers/ff'),
     Period = require('../helpers/period'),
     Pagination = require('../helpers/pagination'),
     ErrorLog = require("../models/error").ErrorLog;
@@ -13,28 +11,11 @@ router.get('/', function(req, res, next) {
         limit = +req.body.limit || +req.query.limit || 10,
         pages = 1,
         pagination,
-        // db
-        query = {
-            createdAt: {
-                $gt: Period.getStartOf(period)
-            }
-        },
         queryFilters,
         // response
         feedback;
 
-    async.series({
-        count: function(callback) {
-            ErrorLog.count(query, function(err, count) {
-                if (err) {
-                    return callback(err);
-                }
-                callback(null, count);
-            });
-        }
-
-    }, function(err, results) {
-        // error
+    ErrorLog.getCountForThePeriod(period, function(err, periodCount) {
         if (err) {
             return next(err);
         }
@@ -43,24 +24,22 @@ router.get('/', function(req, res, next) {
             title: 'Activity',
             errors: [],
             period: period,
-            periods: Period.mapActive(period)
+            periods: Period.mapActive(period),
+            partials: {
+                error: 'blocks/error',
+                pagination: 'blocks/pagination',
+                'pagination-script': 'blocks/pagination-script',
+                filters: 'blocks/filters',
+            }
         };
 
-        feedback.partials = {
-            error: 'blocks/error',
-            pagination: 'blocks/pagination',
-            'pagination-script': 'blocks/pagination-script',
-            filters: 'blocks/filters',
-        };
-
-        // empty
-        if (!results.count) {
+        // no activity
+        if (!periodCount) {
             return res.render('activity', feedback);
         }
-
-        pages = Math.ceil(results.count / limit);
-        // 404
+        pages = Math.ceil(periodCount / limit);
         if (page > pages) {
+            // empty page, not existed one
             return res.render('activity', feedback);
         }
 
@@ -70,42 +49,23 @@ router.get('/', function(req, res, next) {
 
         queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
-        ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
-            // error
+        // activity for the period
+        ErrorLog.findRichForThePeriod(period, queryFilters, function(err, errorLogs) {
             if (err) {
                 return next(err);
             }
+            // activity for the period
+            feedback.errors = errorLogs;
 
-            async.each(errorLogs, function(errorLog, callback) {
-                // dates
-                errorLog.datetime = Period.daytime(errorLog.createdAt);
-                errorLog.ago = Period.ago(errorLog.createdAt);
-                // occured times count
-                ErrorLog.getTimesCount(errorLog.message, function(err, count) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    errorLog.occuredTimes = count;
-                    callback(null, errorLog);
-                });
-
-            }, function(err) {
-                // error
-                if (err) {
-                    return next(err);
-                }
-                if (ff('pagination')) {
-                    pagination.items = _.each(pagination.navs, function(p) {
-                        p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
-                    });
-                    feedback.pagination = pagination;
-                }
-
-                feedback.errors = errorLogs;
-
-                res.render('activity', feedback);
+            // update controls
+            pagination.items = _.each(pagination.navs, function(p) {
+                p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
             });
+            feedback.pagination = pagination;
+
+            res.render('activity', feedback);
         });
+
     });
 });
 

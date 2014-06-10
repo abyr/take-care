@@ -48,6 +48,28 @@ ErrorSchema.statics.getTimesCount = function(message, cb) {
     this.count({ message: message }, cb);
 };
 
+ErrorSchema.statics.getCountForThePeriod = function(period, cb) {
+    this.count({
+        createdAt: { $gt: Period.getStartOf(period) }
+    }, cb);
+};
+
+ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
+    var that = this;
+    this.find({
+        createdAt: { $gt: Period.getStartOf(period) }
+    }, null, filters, function(err, logs) {
+        if (err) {
+            cb(err);
+        }
+        async.each(logs, function(log, logCb) {
+            that.addRichFields(log, logCb);
+        }, function(err) {
+            cb(err, logs);
+        });
+    });
+};
+
 ErrorSchema.statics.addRichFields = function(log, cb) {
     // dates
     log.datetime = Period.daytime(log.createdAt);
