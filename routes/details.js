@@ -7,8 +7,6 @@ var express = require('express'),
 
 router.get('/:id', function(req, res, next) {
 
-    // FIXME: duplicated code
-
     var id = req.params.id,
         period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
