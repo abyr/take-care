@@ -2,7 +2,6 @@ var express = require('express'),
     async = require('async'),
     _ = require('lodash'),
     router = express.Router(),
-    ff = require('../helpers/ff'),
     Pagination = require('../helpers/pagination'),
     Period = require('../helpers/period'),
     ErrorLog = require("../models/error").ErrorLog;
@@ -17,8 +16,6 @@ router.get('/:id', function(req, res, next) {
         limit = +req.body.limit || +req.query.limit || 10,
         pages = 1,
         pagination,
-        // db
-        query,
         queryFilters,
         errorLog,
         // response
@@ -36,74 +33,60 @@ router.get('/:id', function(req, res, next) {
             return next(err);
         }
 
+        // base error
         errorLog = results.errorLog;
+
         // visibility
         errorLog.hideSimilarLink = true;
 
         // response feed
         feedback = {
             title: 'Details',
+            // base error
+            errorLog: [errorLog], // use single partial
+            // base error history
             errors: [],
+            // history filters
             period: period,
-            periods: Period.mapActive(period)
-        };
-
-        feedback.partials = {
-            error: 'blocks/error',
-            pagination: 'blocks/pagination',
-            'pagination-script': 'blocks/pagination-script',
-            filters: 'blocks/filters'
+            periods: Period.mapActive(period),
+            // TODO: share partials
+            partials: {
+                error: 'blocks/error',
+                pagination: 'blocks/pagination',
+                'pagination-script': 'blocks/pagination-script',
+                filters: 'blocks/filters'
+            }
         };
 
         pagination = (new Pagination(page, limit, pages)).setSort({
             createdAt: -1
         });
-        query = {
-            message: results.errorLog.message
-        };
+
         queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
-        ErrorLog.find(query, null, queryFilters, function(err, errorLogs) {
-            // error
+        // get history
+        ErrorLog.findRichSimilarErrors(errorLog, queryFilters, function(err, logs) {
             if (err) {
                 return next(err);
             }
-            async.each(errorLogs, function(errorLog, callback) {
-                errorLog.isChild = true;
-                errorLog.hideDetailsLink = true;
-                errorLog.datetime = Period.daytime(errorLog.createdAt);
-                errorLog.ago = Period.ago(errorLog.createdAt);
+            pages = Math.ceil(errorLog.occuredTimes / limit);
+            if (page > pages) {
+                // empty history page, it doesn't exists
+                return res.render('details', feedback);
+            }
+            // base error history
+            feedback.errors = logs;
 
-                callback(null, errorLog);
-
-            }, function(err) {
-                // error
-                if (err) {
-                    return next(err);
-                }
-
-                pages = Math.ceil(errorLog.occuredTimes / limit);
-                // 404
-                if (page > pages) {
-                    return res.render('details', feedback);
-                }
-
-                pagination.navigate(page, limit, pages);
-
-                if (ff('pagination')) {
-                    pagination.items = _.each(pagination.navs, function(p) {
-                        p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
-                    });
-                    feedback.pagination = pagination;
-                }
-
-                feedback.pagination = pagination;
-                feedback.errors = errorLogs;
-                feedback.errorLog = [errorLog];
-
-                res.render('details', feedback);
+            // update controls
+            pagination.navigate(page, limit, pages);
+            pagination.items = _.each(pagination.navs, function(p) {
+                p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
             });
+            feedback.pagination = pagination;
+
+            res.render('details', feedback);
         });
+
     });
 });
 
