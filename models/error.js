@@ -1,10 +1,18 @@
+/**
+ * ErrorLog entity
+ *
+ * @module model
+ */
+
 var mongoose = require("mongoose"),
     Period = require('../helpers/period'),
     async = require('async');
 
 /**
- * ErrorLog schema
- * @type {mongoose}
+ * ErrorLog fields and methods
+ *
+ * @class ErrorSchema
+ * @static
  */
 var ErrorSchema = new mongoose.Schema({
     message: { // text message
@@ -41,6 +49,8 @@ var ErrorSchema = new mongoose.Schema({
 
 /**
  * Get how many time error was occured
+ *
+ * @method getTimesCount
  * @param  {String}   message Error message
  * @param  {Function} cb      Callback
  */
@@ -48,12 +58,27 @@ ErrorSchema.statics.getTimesCount = function(message, cb) {
     this.count({ message: message }, cb);
 };
 
+/**
+ * Get errors count for the period
+ *
+ * @method getCountForThePeriod
+ * @param  {String}   period Period name (day, week, etc.)
+ * @param  {Function} cb     Callback
+ */
 ErrorSchema.statics.getCountForThePeriod = function(period, cb) {
     this.count({
         createdAt: { $gt: Period.getStartOf(period) }
     }, cb);
 };
 
+/**
+ * Find errors for the period with extended fields list
+ *
+ * @method findRichForThePeriod
+ * @param  {String}   period  Period name
+ * @param  {Object}   filters Mongoose filters
+ * @param  {Function} cb      Callback
+ */
 ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
     var that = this;
     this.find({
@@ -70,6 +95,13 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
     });
 };
 
+/**
+ * Add computed fields to the model
+ *
+ * @method addRichFields
+ * @param {Object}   log Error item
+ * @param {Function} cb  Callback
+ */
 ErrorSchema.statics.addRichFields = function(log, cb) {
     // dates
     log.datetime = Period.daytime(log.createdAt);
@@ -86,6 +118,13 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
     });
 };
 
+/**
+ * Find the Error by it's ID
+ *
+ * @method findRichErrorById
+ * @param  {String}   id ID hash
+ * @param  {Function} cb Callback
+ */
 ErrorSchema.statics.findRichErrorById = function(id, cb) {
     var that = this;
     this.findById(id, function(err, log) {
@@ -96,6 +135,14 @@ ErrorSchema.statics.findRichErrorById = function(id, cb) {
     });
 };
 
+/**
+ * Find errors similar to the base one
+ *
+ * @method findRichSimilarErrors
+ * @param  {Object}   baseLog Base error log
+ * @param  {Object}   filters Mongoose filters
+ * @param  {Function} cb      Callback
+ */
 ErrorSchema.statics.findRichSimilarErrors = function(baseLog, filters, cb) {
     var that = this;
     this.find({ message: baseLog.message }, null, filters || {}, function(err, logs) {
