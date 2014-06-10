@@ -1,4 +1,5 @@
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"),
+    Period = require('../helpers/period');
 
 /**
  * ErrorLog schema
@@ -30,6 +31,10 @@ var ErrorSchema = new mongoose.Schema({
         index: true,
         default: (+new Date()) // cached
     }
+
+    // datetime
+    // ago
+    // timesOccured
 });
 
 /**
@@ -39,6 +44,25 @@ var ErrorSchema = new mongoose.Schema({
  */
 ErrorSchema.statics.getTimesCount = function(message, cb) {
     this.count({ message: message }, cb);
+};
+
+ErrorSchema.statics.findRichErrorById = function(id, cb) {
+    var that = this;
+    this.findById(id, function(err, rich) {
+        if (err) {
+            return cb(err);
+        }
+        // dates
+        rich.datetime = Period.daytime(rich.createdAt);
+        rich.ago = Period.ago(rich.createdAt);
+        // times
+        that.getTimesCount(rich.message, function(err, count) {
+            if (count) {
+                rich.occuredTimes = count;
+            }
+            cb(err, rich);
+        });
+    });
 };
 
 module.exports = {

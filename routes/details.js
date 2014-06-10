@@ -25,23 +25,9 @@ router.get('/:id', function(req, res, next) {
         feedback;
 
     async.series({
-        errorLog: function(callback) {
-            ErrorLog.findById(id, function(err, errorLog) {
-                if (err) {
-                    return callback(err);
-                }
-                // dates
-                errorLog.datetime = Period.daytime(errorLog.createdAt);
-                errorLog.ago = Period.ago(errorLog.createdAt);
-                // occured times count
-                ErrorLog.getTimesCount(errorLog.message, function(err, count) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    errorLog.occuredTimes = count;
-                    callback(null, errorLog);
-                });
-
+        errorLog: function(cb) {
+            ErrorLog.findRichErrorById(id, function(err, richErrorLog) {
+                cb(err, richErrorLog);
             });
         }
     }, function(err, results) {
