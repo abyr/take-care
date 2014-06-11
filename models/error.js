@@ -158,6 +158,17 @@ ErrorSchema.statics.findRichSimilarErrors = function(baseLog, filters, cb) {
     });
 };
 
+/**
+ * Remove errors later then passed period
+ * @param  {String}   period Period name
+ * @param  {Function} cb     Callback
+ */
+ErrorSchema.statics.removeLaterThen = function(period, cb) {
+    this.find({
+        createdAt: { $lt: Period.getStartOf(period) }
+    }).remove(cb);
+};
+
 module.exports = {
     ErrorLog: mongoose.model("ErrorLog", ErrorSchema)
 };
