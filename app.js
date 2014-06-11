@@ -42,6 +42,7 @@ var routes = require(path.join(__dirname, 'routes'));
 app.use('/', routes.activity);
 app.use('/activity', routes.activity);
 app.use('/details', routes.details);
+app.use('/tools', routes.tools);
 app.use('/api', routes.api);
 
 // catch 404 and forwarding to error handler
