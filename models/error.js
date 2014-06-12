@@ -106,9 +106,11 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
     // dates
     log.datetime = Period.daytime(log.createdAt);
     log.ago = Period.ago(log.createdAt);
+    log.browserName = (log.browser) ? log.browser.split(' ')[0].toLowerCase() : false;
     if (log.isChild) {
         return cb(null, log);
     }
+    log.browsers = [log.browserName]; // todo: get all
     // times
     this.getTimesCount(log.message, function(err, count) {
         if (count) {
