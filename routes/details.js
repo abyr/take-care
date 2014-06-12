@@ -23,6 +23,7 @@ router.get('/:id', function(req, res, next) {
         }
         // visibility
         errorLog.hideSimilarLink = true;
+        errorLog.hideDetailsLink = true;
 
         // response feed
         feedback = {
