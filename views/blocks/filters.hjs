@@ -1,4 +1,4 @@
-<ul class="b-group b-group-line filters">
+<ul class="b-group b-group-line b-group-link filters">
     {{^periods}}
         <li>No periods</li>
     {{/periods}}

@@ -1,5 +1,5 @@
 {{#pagination}}
-    <ul class="b-group b-group-line pagination">
+    <ul class="b-group b-group-line b-group-link pagination">
         {{^items}}
             <li></li>
         {{/items}}
