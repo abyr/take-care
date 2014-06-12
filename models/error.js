@@ -89,6 +89,7 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
             cb(err);
         }
         async.each(logs, function(log, logCb) {
+            log.ignoreBrowsers = true;
             that.addRichFields(log, logCb);
         }, function(err) {
             cb(err, logs);
@@ -112,11 +113,13 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
     if (log.isChild) {
         return cb(null, log);
     }
-    log.browsers = [log.browserName]; // todo: get all
     // times
     this.getTimesCount(log.message, function(err, count) {
         if (count) {
             log.occuredTimes = count;
+        }
+        if (log.ignoreBrowsers) {
+            return cb(null, log);
         }
         that.findAllBrowsers(log, function(err, browsers) {
             log.browsers = _.map(browsers, function(browser) {
