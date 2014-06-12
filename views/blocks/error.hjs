@@ -25,21 +25,41 @@
         </div>
 
         <div>
-            <span>{{#browser}}{{browser}}{{/browser}}</span>
+            <ul class="b-group b-group-line browsers">
+                {{#browsers}}
+                    <li class="icon icon-{{.}}"></li>
+                {{/browsers}}
+                {{^browsers}}
+                    {{#browserName}}
+                        <li class="icon icon-{{browserName}}"></li>
+                    {{/browserName}}
+                    {{^browserName}}
+                        {{#browser}}
+                            <li class="icon icon-{{browser}}"></li>
+                        {{/browser}}
+                    {{/browserName}}
+                {{/browsers}}
+            </ul>
 
-            <span>{{ago}}</span> <i class="faded">{{datetime}}</i>
+            <ul class="b-group b-group-line">
+                <li>
+                    <span>{{ago}}</span>
+                </li>
+                <li>
+                    <span>{{datetime}}</span>
+                </li>
+            </ul>
 
             {{#isNew}}
-                <span>New error. Never seen before</span>
+                <span>New error. Never seen before. </span>
             {{/isNew}}
-        </div>
 
-        <div>
             {{^hideDetailsLink}}
                 {{#occuredTimes}}
                     <a href="/details/{{_id}}">Details</a>
                 {{/occuredTimes}}
             {{/hideDetailsLink}}
+
         </div>
 
     {{/message}}
