@@ -6,7 +6,8 @@
 
 var mongoose = require("mongoose"),
     Period = require('../helpers/period'),
-    async = require('async');
+    async = require('async'),
+    _ = require('lodash');
 
 /**
  * ErrorLog fields and methods
@@ -103,6 +104,7 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
  * @param {Function} cb  Callback
  */
 ErrorSchema.statics.addRichFields = function(log, cb) {
+    var that = this;
     // dates
     log.datetime = Period.daytime(log.createdAt);
     log.ago = Period.ago(log.createdAt);
@@ -116,7 +118,13 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
         if (count) {
             log.occuredTimes = count;
         }
-        cb(err, log);
+        that.findAllBrowsers(log, function(err, browsers) {
+            log.browsers = _.map(browsers, function(browser) {
+                return (browser) ? browser.split(' ')[0].toLowerCase() : false;
+            });
+            cb(err, log);
+        });
+
     });
 };
 
@@ -158,6 +166,10 @@ ErrorSchema.statics.findRichSimilarErrors = function(baseLog, filters, cb) {
             cb(err, logs);
         });
     });
+};
+
+ErrorSchema.statics.findAllBrowsers = function(baseLog, cb) {
+    this.find({ message: baseLog.message }).distinct('browser', cb);
 };
 
 /**
