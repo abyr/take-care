@@ -3,7 +3,6 @@
  */
 
 var express = require('express'),
-    _ = require('lodash'),
     router = express.Router(),
     ErrorLog = require("../models/error").ErrorLog;
 
