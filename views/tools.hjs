@@ -20,7 +20,7 @@
 
             {{^period}}
                 <span>Later then</span>
-                <ul class="b-group b-group-line">
+                <ul class="b-group b-group-line b-group-link">
                     {{#periods}}
                         <li>
                             <span class="clickable" data-key="period" data-val="{{.}}">{{.}}</span>
