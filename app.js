@@ -8,14 +8,26 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     app = express(),
     env = app.get('env'),
-    appConfig;
+    appConfig,
+    dbOptions;
 
 if (env === 'development') {
     env = '';
 }
 appConfig = require('./config' + ((env) ? '.' + env : ''));
 
-mongoose.connect(appConfig.db.connection);
+dbOptions = {
+    server: {
+        'auto_reconnect': true,
+        poolSize: 5,
+        socketOptions: {
+            keepAlive: 1
+        }
+    }
+};
+
+// connect
+mongoose.connect(appConfig.db.connection, dbOptions);
 
 var db = mongoose.connection;
 
@@ -23,6 +35,9 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 db.once('open', function callback() {
     console.log("mongodb has been started");
+});
+db.once('disconnect', function callback() {
+    console.log('mongodb has been disconected');
 });
 
 // view engine setup
