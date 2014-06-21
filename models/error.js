@@ -121,13 +121,26 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
         if (log.ignoreBrowsers) {
             return cb(null, log);
         }
+        // browsers statistic
         that.findAllBrowsers(log, function(err, browsers) {
+            // no version names
             log.browsers = _.map(browsers, function(browser) {
                 return (browser) ? browser.split(' ')[0].toLowerCase() : false;
             });
-            cb(err, log);
+            // statistic
+            log.browsersStat = [];
+            async.each(browsers, function(bro, broCb) {
+                that.getErrorBrowserCount(log, bro, function(err, count) {
+                    log.browsersStat.push({
+                        name: bro,
+                        count: count
+                    });
+                    broCb(err, log);
+                });
+            }, function() {
+                cb(err, log);
+            });
         });
-
     });
 };
 
@@ -173,6 +186,10 @@ ErrorSchema.statics.findRichSimilarErrors = function(baseLog, filters, cb) {
 
 ErrorSchema.statics.findAllBrowsers = function(baseLog, cb) {
     this.find({ message: baseLog.message }).distinct('browser', cb);
+};
+
+ErrorSchema.statics.getErrorBrowserCount = function(baseLog, browser, cb) {
+    this.count({ message: baseLog.message, browser: browser }, cb);
 };
 
 /**
