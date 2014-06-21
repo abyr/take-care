@@ -7,6 +7,7 @@ module.exports = function(grunt) {
                 '**/*.js',
                 '!docs/**/*.js',
                 '!node_modules/**/*.js',
+                '!public/components/**/*.js'
             ],
             options: {
                 jshintrc: '.jshintrc'
@@ -36,6 +37,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+
+    // alias
+    grunt.registerTask('doc', ['yuidoc']);
 
     grunt.registerTask('default', ['jshint']);
 

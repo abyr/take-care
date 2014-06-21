@@ -24,13 +24,7 @@ router.get('/', function(req, res, next) {
             title: 'Activity',
             errors: [],
             period: period,
-            periods: Period.mapActive(period),
-            partials: {
-                error: 'blocks/error',
-                pagination: 'blocks/pagination',
-                'pagination-script': 'blocks/pagination-script',
-                filters: 'blocks/filters',
-            }
+            periods: Period.mapActive(period)
         };
 
         // no activity

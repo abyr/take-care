@@ -1,64 +1,52 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{title}}</title>
+{{> head}}
 
-    <meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+{{> menu}}
 
-    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+<h1>{{title}}</h1>
 
-</head>
-<body>
-    <div>
-        <a href="/">Take care</a>
+<div>
+    {{#errorLog}}
+        {{> error}}
+    {{/errorLog}}
+</div>
 
-        <h1>{{title}}</h1>
+<canvas id="browsersChart" height="200" width="200"></canvas>
 
-        <div>
-            {{#errorLog}}
-                {{> error}}
-            {{/errorLog}}
-        </div>
+<hr />
 
-        <canvas id="browsersChart" height="200" width="200"></canvas>
+<h3>History</h3>
 
-        <hr />
+<div>{{> pagination}}</div>
 
-        <h3>History</h3>
+<div>
+    {{^errors}}
+        No errors
+    {{/errors}}
+    {{#errors}}
+        {{> error}}
+    {{/errors}}
+</div>
 
-        <div>{{> pagination}}</div>
+<div>{{> pagination}}</div>
 
-        <div>
-            {{^errors}}
-                No errors
-            {{/errors}}
-            {{#errors}}
-                {{> error}}
-            {{/errors}}
-        </div>
+{{> pagination-script}}
 
-        <div>{{> pagination}}</div>
-    </div>
+<script src="/components/regaddi_chartjs/Chart.js"></script>
+<script>
+    var ctx = document.getElementById("browsersChart").getContext("2d"),
+        pieOptions = {
+            segmentShowStroke: true,
+            segmentStrokeColor: 'black',
+            segmentStrokeWidth: 1,
+            animation: false
+        },
+        pieData = [];
 
-    {{> pagination-script}}
+    {{#errorLog}}
+        pieData = {{{pieData}}};
+    {{/errorLog}}
 
-    <script src="/components/regaddi_chartjs/Chart.js"></script>
-    <script>
-        var ctx = document.getElementById("browsersChart").getContext("2d"),
-            pieOptions = {
-                segmentShowStroke: true,
-                segmentStrokeColor: 'black',
-                segmentStrokeWidth: 1,
-                animation: false
-            },
-            pieData = [];
+    this.browsersChart = new Chart(ctx).Pie(pieData, pieOptions);
+</script>
 
-        {{#errorLog}}
-            pieData = {{{pieData}}};
-        {{/errorLog}}
-
-        this.browsersChart = new Chart(ctx).Pie(pieData, pieOptions);
-    </script>
-</body>
-</html>
+{{> footer}}

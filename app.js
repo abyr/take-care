@@ -1,5 +1,6 @@
 /* jshint unused: false */
 var express = require('express'),
+    _ = require('lodash'),
     mongoose = require('mongoose'),
     path = require('path'),
     favicon = require('static-favicon'),
@@ -44,6 +45,12 @@ db.once('disconnect', function callback() {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 
+// partials
+var partials = require(path.join(__dirname, 'routes/partials'));
+
+// app.set('partials', partials);
+app.locals.partials = partials;
+
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -54,11 +61,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // routes
 var routes = require(path.join(__dirname, 'routes'));
 
-app.use('/', routes.activity);
-app.use('/activity', routes.activity);
-app.use('/details', routes.details);
-app.use('/tools', routes.tools);
-app.use('/api', routes.api);
+_.each(_.keys(routes), function(key){
+    app.use((key === 'index') ? '/' : '/'+key, routes[key]);
+});
 
 // catch 404 and forwarding to error handler
 app.use(function(req, res, next) {

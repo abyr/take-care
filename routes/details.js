@@ -3,7 +3,8 @@ var express = require('express'),
     router = express.Router(),
     Pagination = require('../helpers/pagination'),
     Period = require('../helpers/period'),
-    ErrorLog = require("../models/error").ErrorLog;
+    ErrorLog = require("../models/error").ErrorLog,
+    theme = require('../public/theme.json');
 
 router.get('/:id', function(req, res, next) {
 
@@ -32,29 +33,17 @@ router.get('/:id', function(req, res, next) {
             errors: [],
             // history filters
             period: period,
-            periods: Period.mapActive(period),
-            // TODO: share partials
-            partials: {
-                error: 'blocks/error',
-                pagination: 'blocks/pagination',
-                'pagination-script': 'blocks/pagination-script',
-                filters: 'blocks/filters'
-            }
+            periods: Period.mapActive(period)
         };
-
-        var colors = [
-            '#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9',
-            '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'
-        ];
 
         var pieData = _.map(errorLog.browsersStat, function(item, i) {
             return {
-                value: item.count,
-                color: colors[i],
+                value: (i === 1) ? 234 : item.count,
+                color: theme.colors[i],
                 label : item.name,
                 labelColor : 'white',
-                labelFontSize : '12'
-            }
+                labelFontSize : '8'
+            };
         });
 
         // json data for browsers pie chart

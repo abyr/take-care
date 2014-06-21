@@ -1,30 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{title}}</title>
-    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-    <div>
-        <h1>{{title}}</h1>
+{{> head}}
 
-        <div>{{> filters}}</div>
+<h1>{{title}}</h1>
 
-        <div>{{> pagination}}</div>
+<div>{{> filters}}</div>
 
-        <div>
-            {{^errors}}
-                No errors
-            {{/errors}}
-            {{#errors}}
-                {{> error}}
-            {{/errors}}
-        </div>
+<div>{{> pagination}}</div>
 
-        <div>{{> pagination}}</div>
-    </div>
+<div>
+    {{^errors}}
+        No errors
+    {{/errors}}
+    {{#errors}}
+        {{> error}}
+    {{/errors}}
+</div>
 
-    {{> pagination-script}}
-</body>
-</html>
+<div>{{> pagination}}</div>
+
+{{> pagination-script}}
+
+{{> footer}}

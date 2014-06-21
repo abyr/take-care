@@ -1,60 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{title}}</title>
-    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-    <div>
-        <a href="/">Take care</a>
+{{> head}}
 
-        <h1>{{title}}</h1>
+{{> menu}}
 
-        <div>
-            <h2>Clean errors</h2>
+<h1>{{title}}</h1>
 
-            {{#period}}
-                Errors later then <b>{{period}}</b> were removed. <a href="/tools">Back</a>
-            {{/period}}
+<h2>Clean errors</h2>
 
-            {{^period}}
-                <span>Later then</span>
-                <ul class="b-group b-group-line b-group-link">
-                    {{#periods}}
-                        <li>
-                            <span class="clickable" data-key="period" data-val="{{.}}">{{.}}</span>
-                        </li>
-                    {{/periods}}
-                </ul>
-            {{/period}}
+{{#period}}
+    Errors later then <b>{{period}}</b> were removed. <a href="/tools">Back</a>
+{{/period}}
 
-        </div>
+{{^period}}
+    <span>Later then</span>
+    <ul class="b-group b-group-line b-group-link">
+        {{#periods}}
+            <li>
+                <span class="clickable" data-key="period" data-val="{{.}}">{{.}}</span>
+            </li>
+        {{/periods}}
+    </ul>
+{{/period}}
 
-        <script>
-            var navs = document.querySelectorAll('.clickable'),
-                confirmation = function(e) {
-                    var key = this.getAttribute('data-key'),
-                        value = this.getAttribute('data-val') || this.textContent;
+<script>
+    var navs = document.querySelectorAll('.clickable'),
+        confirmation = function(e) {
+            var key = this.getAttribute('data-key'),
+                value = this.getAttribute('data-val') || this.textContent;
 
-                    e && e.preventDefault && e.preventDefault();
-                    if (confirm('The errors later then ' + value + ' will be removed')) {
-                        window.location.search = [key, value].join('=');
-                    }
-                    return false;
-                };
+            e && e.preventDefault && e.preventDefault();
+            if (confirm('The errors later then ' + value + ' will be removed')) {
+                window.location.search = [key, value].join('=');
+            }
+            return false;
+        };
 
-            if (navs.length) {
-                for (prop in navs) {
-                    if (navs.hasOwnProperty(prop)) {
-                        el = navs[prop];
-                        if (el && typeof el.addEventListener === 'function') {
-                            el.addEventListener('click', confirmation);
-                        }
-                    }
+    if (navs.length) {
+        for (prop in navs) {
+            if (navs.hasOwnProperty(prop)) {
+                el = navs[prop];
+                if (el && typeof el.addEventListener === 'function') {
+                    el.addEventListener('click', confirmation);
                 }
             }
-        </script>
-    </div>
-</body>
-</html>
+        }
+    }
+</script>
+
+{{> footer}}
