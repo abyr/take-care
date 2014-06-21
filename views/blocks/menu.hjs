@@ -1,0 +1,7 @@
+<nav>
+    <menu class="b-group b-group-line b-group-link">
+        <li><a href="/">Activity</a></li>
+        <li><a href="/stats">Stats</a></li>
+        <li><a href="/tools">Tools</a></li>
+    </menu>
+</nav>
