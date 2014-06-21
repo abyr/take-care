@@ -8,6 +8,15 @@ a {
 ul li {
     display: inline-block;
 }
+menu li {
+    display: inline-block;
+}
+nav menu {
+    display: inline-block;
+}
+nav menu li {
+    margin: 0 10px 0 0;
+}
 
 .b-group {
     display: block;
@@ -61,12 +70,16 @@ ul li {
 }
 .icon-safari {
     background-image: url('/images/safari-32.png');
+    width: 28px;
+    height: 28px;
 }
 .icon-firefox {
     background-image: url('/images/firefox-32.png');
 }
 .icon-chrome {
     background-image: url('/images/chrome-32.png');
+    width: 26px;
+    height: 26px;
 }
 .icon-msie {
     background-image: url('/images/msie-32.png');
