@@ -1,5 +1,5 @@
 {
-    "fail_on_start": 0,
     "print_port_on_start": 1,
-    "pagination": 1
+    "charts": 1,
+    "charts_animation": 0
 }
