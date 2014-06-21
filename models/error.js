@@ -7,7 +7,12 @@
 var mongoose = require("mongoose"),
     Period = require('../helpers/period'),
     async = require('async'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    methods = {
+        getBrowserShortName: function(name) {
+            return (name) ? name.split(' ')[0].toLowerCase() : false;
+        }
+    };
 
 /**
  * ErrorLog fields and methods
@@ -47,6 +52,8 @@ var ErrorSchema = new mongoose.Schema({
     // timesOccured
     // isChild
 });
+
+ErrorSchema.statics.getTimesCount
 
 /**
  * Get how many time error was occured
@@ -124,15 +131,14 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
         // browsers statistic
         that.findAllBrowsers(log, function(err, browsers) {
             // no version names
-            log.browsers = _.map(browsers, function(browser) {
-                return (browser) ? browser.split(' ')[0].toLowerCase() : false;
-            });
+            log.browsers = _.map(browsers, methods.getBrowserShortName);
             // statistic
             log.browsersStat = [];
             async.each(browsers, function(bro, broCb) {
                 that.getErrorBrowserCount(log, bro, function(err, count) {
                     log.browsersStat.push({
                         name: bro,
+                        shortname: methods.getBrowserShortName(bro),
                         count: count
                     });
                     broCb(err, log);

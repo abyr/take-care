@@ -38,11 +38,11 @@ router.get('/:id', function(req, res, next) {
 
         var pieData = _.map(errorLog.browsersStat, function(item, i) {
             return {
-                value: (i === 1) ? 234 : item.count,
+                value: item.count,
                 color: theme.colors[i],
                 label : item.name,
                 labelColor : 'white',
-                labelFontSize : '8'
+                labelFontSize : '12'
             };
         });
 
@@ -71,12 +71,14 @@ router.get('/:id', function(req, res, next) {
             // base error history
             feedback.errors = logs;
 
-            // update controls
-            pagination.navigate(page, limit, pages);
-            pagination.items = _.each(pagination.navs, function(p) {
-                p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
-            });
-            feedback.pagination = pagination;
+            if (pages) {
+                // update controls
+                pagination.navigate(page, limit, pages);
+                pagination.items = _.each(pagination.navs, function(p) {
+                    p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
+                });
+                feedback.pagination = pagination;
+            }
 
             res.render('details', feedback);
         });

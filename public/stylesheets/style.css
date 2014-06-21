@@ -5,6 +5,9 @@ body {
 a {
     color: #00B7FF;
 }
+ul {
+    padding: 0;
+}
 ul li {
     display: inline-block;
 }
@@ -67,6 +70,7 @@ nav menu li {
     height: 24px;
     background-image: url('/images/browser-32.png');
     background-size: contain;
+    vertical-align: middle;
 }
 .icon-safari {
     background-image: url('/images/safari-32.png');
@@ -84,7 +88,13 @@ nav menu li {
 .icon-msie {
     background-image: url('/images/msie-32.png');
 }
+.icon .titled {
+    padding-right: 20px;
+}
 
 .browsers {
     margin: 0;
+}
+.note {
+    font-size: 11px;
 }

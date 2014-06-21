@@ -2,20 +2,20 @@
 
 <h1>{{title}}</h1>
 
-<div>{{> filters}}</div>
+{{> filters}}
 
-<div>{{> pagination}}</div>
+<br/>
 
-<div>
-    {{^errors}}
-        No errors
-    {{/errors}}
-    {{#errors}}
-        {{> error}}
-    {{/errors}}
-</div>
+{{> pagination}}
 
-<div>{{> pagination}}</div>
+{{^errors}}
+    No errors
+{{/errors}}
+{{#errors}}
+    {{> error}}
+{{/errors}}
+
+{{> pagination}}
 
 {{> pagination-script}}
 

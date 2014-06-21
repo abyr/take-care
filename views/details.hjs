@@ -16,18 +16,16 @@
 
 <h3>History</h3>
 
-<div>{{> pagination}}</div>
+{{> pagination}}
 
-<div>
-    {{^errors}}
-        No errors
-    {{/errors}}
-    {{#errors}}
-        {{> error}}
-    {{/errors}}
-</div>
+{{^errors}}
+    No errors
+{{/errors}}
+{{#errors}}
+    {{> error}}
+{{/errors}}
 
-<div>{{> pagination}}</div>
+{{> pagination}}
 
 {{> pagination-script}}
 
