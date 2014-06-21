@@ -1,0 +1,33 @@
+{
+  "name": "take-care",
+  "version": "0.0.1",
+  "homepage": "https://github.com/abyr/take-care",
+  "authors": [
+    "Aleksandr Denisenko <abyrcheg@gmail.com>"
+  ],
+  "description": "Save the errors that you want to take care.",
+  "moduleType": [
+    "amd",
+    "node"
+  ],
+  "keywords": [
+    "log",
+    "error",
+    "take",
+    "care"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chartjs": "*",
+    "regaddi_chartjs": "git@github.com:Regaddi/Chart.js.git"
+  }
+}
