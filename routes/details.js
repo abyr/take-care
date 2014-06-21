@@ -28,8 +28,6 @@ router.get('/:id', function(req, res, next) {
         // response feed
         feedback = {
             title: 'Details',
-            // base error
-            errorLog: [errorLog], // use single partial
             // base error history
             errors: [],
             // history filters
@@ -43,6 +41,27 @@ router.get('/:id', function(req, res, next) {
                 filters: 'blocks/filters'
             }
         };
+
+        var colors = [
+            '#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9',
+            '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'
+        ];
+
+        var pieData = _.map(errorLog.browsersStat, function(item, i) {
+            return {
+                value: item.count,
+                color: colors[i],
+                label : item.name,
+                labelColor : 'white',
+                labelFontSize : '12'
+            }
+        });
+
+        // json data for browsers pie chart
+        errorLog.pieData = JSON.stringify(pieData);
+
+        // finalize errorLog
+        feedback.errorLog = [errorLog]; // using the same partial
 
         pagination = (new Pagination(page, limit, pages)).setSort({
             createdAt: -1

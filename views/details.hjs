@@ -2,8 +2,12 @@
 <html>
 <head>
     <title>{{title}}</title>
+
+    <meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
     <link rel='stylesheet' href='/stylesheets/style.css' />
+
 </head>
 <body>
     <div>
@@ -16,6 +20,8 @@
                 {{> error}}
             {{/errorLog}}
         </div>
+
+        <canvas id="browsersChart" height="200" width="200"></canvas>
 
         <hr />
 
@@ -36,5 +42,23 @@
     </div>
 
     {{> pagination-script}}
+
+    <script src="/components/regaddi_chartjs/Chart.js"></script>
+    <script>
+        var ctx = document.getElementById("browsersChart").getContext("2d"),
+            pieOptions = {
+                segmentShowStroke: true,
+                segmentStrokeColor: 'black',
+                segmentStrokeWidth: 1,
+                animation: false
+            },
+            pieData = [];
+
+        {{#errorLog}}
+            pieData = {{{pieData}}};
+        {{/errorLog}}
+
+        this.browsersChart = new Chart(ctx).Pie(pieData, pieOptions);
+    </script>
 </body>
 </html>
