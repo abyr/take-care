@@ -6,6 +6,7 @@
 
 var mongoose = require("mongoose"),
     Period = require('../helpers/period'),
+    moment = require('moment'),
     async = require('async'),
     _ = require('lodash'),
     methods = {
@@ -53,8 +54,6 @@ var ErrorSchema = new mongoose.Schema({
     // isChild
 });
 
-ErrorSchema.statics.getTimesCount
-
 /**
  * Get how many time error was occured
  *
@@ -101,6 +100,43 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
         }, function(err) {
             cb(err, logs);
         });
+    });
+};
+
+// todo: cache
+ErrorSchema.statics.periodActivityStat = function(period, cb) {
+    var that = this,
+        start = Period.getStartOf('day'), // todo: use period
+        now = +new Date(),
+        hours = _.map(_.range(24), function(i) {
+            return +moment(start).add('hours', i);
+        }),
+        result = {
+            labels: _.map(hours, function(hour) {
+                return moment(hour).format('h:mm a');
+            }),
+            datasets: [{ // todo: remove options
+                fillColor : "rgba(220,220,220,0.5)",
+                strokeColor : "rgba(220,220,220,1)",
+                pointColor : "rgba(220,220,220,1)",
+                pointStrokeColor : "#fff",
+                data: []
+            }]
+        };
+
+    async.eachSeries(hours, function(hour, hourCb) {
+        if (hour > now) {
+            return hourCb(null, 0);
+        }
+        that.count({
+            createdAt: { '$gt': start, '$lt': hour }
+        }, function(err, count) {
+            start = hour;
+            result.datasets[0].data.push(count);
+            hourCb(err);
+        });
+    }, function(err) {
+        cb(err, result);
     });
 };
 

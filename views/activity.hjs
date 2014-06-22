@@ -6,6 +6,10 @@
 
 <br/>
 
+<canvas id="activityChart" height="200" width="800"></canvas>
+
+<br/>
+
 {{> pagination}}
 
 {{^errors}}
@@ -18,5 +22,20 @@
 {{> pagination}}
 
 {{> pagination-script}}
+
+<script src="/components/chartjs/Chart.js"></script>
+<script>
+    var ctx = document.getElementById("activityChart").getContext("2d"),
+        lineOptions = {},
+        lineData,
+        activityChart;
+
+    {{#lineData}}
+        lineData = {{{lineData}}};
+    {{/lineData}}
+
+    activityChart = new Chart(ctx).Line(lineData, lineOptions);
+
+</script>
 
 {{> footer}}

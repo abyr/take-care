@@ -2,6 +2,7 @@ var express = require('express'),
     _ = require('lodash'),
     router = express.Router(),
     Period = require('../helpers/period'),
+    async = require('async'),
     Pagination = require('../helpers/pagination'),
     ErrorLog = require("../models/error").ErrorLog;
 
@@ -43,14 +44,21 @@ router.get('/', function(req, res, next) {
 
         queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
-        // activity for the period
-        ErrorLog.findRichForThePeriod(period, queryFilters, function(err, errorLogs) {
+        async.series({
+            stats: function(cb) {
+                ErrorLog.periodActivityStat(period, cb);
+            },
+            logs: function(cb) {
+                ErrorLog.findRichForThePeriod(period, queryFilters, cb);
+            }
+        }, function(err, results) {
             if (err) {
                 return next(err);
             }
+            // line chart data for the period
+            feedback.lineData = JSON.stringify(results.stats);
             // activity for the period
-            feedback.errors = errorLogs;
-
+            feedback.errors = results.logs;
             // update controls
             pagination.items = _.each(pagination.navs, function(p) {
                 p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
