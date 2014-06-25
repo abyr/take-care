@@ -225,7 +225,8 @@ ErrorSchema.statics.periodActivityStat = function(period, cb) {
             byPeriod = 'days';
             break;
         case 'month':
-            number = 28; // propper number of days in month
+            number = moment().daysInMonth();
+            label = 'Do';
             byPeriod = 'days';
             break;
         case 'year':
@@ -236,12 +237,10 @@ ErrorSchema.statics.periodActivityStat = function(period, cb) {
         default:
             throw new Error('Unknown period ' + period);
     }
-
-    // todo: cache
-    this._periodActivityStat(period, number, byPeriod, label, cb);
+    this.fetchActivityStat(period, number, byPeriod, label, cb);
 };
 
-ErrorSchema.statics._periodActivityStat = function(period, number, byPeriod, label, cb) {
+ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label, cb) {
     var that = this,
         start = Period.getStartOf(period),
         now = +new Date(),
