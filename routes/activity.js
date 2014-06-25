@@ -20,7 +20,6 @@ router.get('/', function(req, res, next) {
         if (err) {
             return next(err);
         }
-
         feedback = {
             title: 'Activity',
             errors: [],
@@ -46,7 +45,15 @@ router.get('/', function(req, res, next) {
 
         async.series({
             stats: function(cb) {
-                ErrorLog.periodActivityStat(period, cb);
+                ErrorLog.periodActivityStat(period, function(err, data) {
+                    _.each(data.datasets, function(set) {
+                        set.fillColor = "rgba(220,220,220,0.5)";
+                        set.strokeColor = "rgba(220,220,220,1)";
+                        set.pointColor = "rgba(220,220,220,1)";
+                        set.pointStrokeColor = "#fff";
+                    });
+                    cb(err, data);
+                });
             },
             logs: function(cb) {
                 ErrorLog.findRichForThePeriod(period, queryFilters, cb);

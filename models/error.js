@@ -252,17 +252,11 @@ ErrorSchema.statics._periodActivityStat = function(period, number, byPeriod, lab
             labels: _.map(hours, function(hour) {
                 return moment(hour).format(label);
             }),
-            datasets: [{ // todo: remove options
-                fillColor: "rgba(220,220,220,0.5)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                data: []
-            }]
+            datasets: [{ data: [] }]
         };
 
     async.eachSeries(hours, function(hour, hourCb) {
-        if (hour > now) {
+        if (hour > +moment(now).add(byPeriod, 1)) {
             return hourCb(null, 0);
         }
         that.count({
