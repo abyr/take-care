@@ -35,11 +35,11 @@ Install dependencies
 
 Create config
 
-    cp conf.example.js conf.js
+    cp config.example.js conf.js
 
 Configure DB connection
 
-    vim conf.js
+    vim config.js
 
 For example, you can use **MongoHQ** connection like this
 
