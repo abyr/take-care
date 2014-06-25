@@ -103,43 +103,6 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
     });
 };
 
-// todo: cache
-ErrorSchema.statics.periodActivityStat = function(period, cb) {
-    var that = this,
-        start = Period.getStartOf('day'), // todo: use period
-        now = +new Date(),
-        hours = _.map(_.range(24), function(i) {
-            return +moment(start).add('hours', i);
-        }),
-        result = {
-            labels: _.map(hours, function(hour) {
-                return moment(hour).format('h:mm a');
-            }),
-            datasets: [{ // todo: remove options
-                fillColor : "rgba(220,220,220,0.5)",
-                strokeColor : "rgba(220,220,220,1)",
-                pointColor : "rgba(220,220,220,1)",
-                pointStrokeColor : "#fff",
-                data: []
-            }]
-        };
-
-    async.eachSeries(hours, function(hour, hourCb) {
-        if (hour > now) {
-            return hourCb(null, 0);
-        }
-        that.count({
-            createdAt: { '$gt': start, '$lt': hour }
-        }, function(err, count) {
-            start = hour;
-            result.datasets[0].data.push(count);
-            hourCb(err);
-        });
-    }, function(err) {
-        cb(err, result);
-    });
-};
-
 /**
  * Add computed fields to the model
  *
@@ -243,6 +206,75 @@ ErrorSchema.statics.removeLaterThen = function(period, cb) {
     this.find({
         createdAt: { $lt: Period.getStartOf(period) }
     }).remove(cb);
+};
+
+// todo: cache
+ErrorSchema.statics.periodActivityStat = function(period, cb) {
+    var label = 'MMMM Do',
+        byPeriod = 'days',
+        number;
+
+    switch (period) {
+        case 'day':
+            label = 'h:mm a';
+            number = 24;
+            byPeriod = 'hours';
+            break;
+        case 'week':
+            number = 7;
+            byPeriod = 'days';
+            break;
+        case 'month':
+            number = 28; // propper number of days in month
+            byPeriod = 'days';
+            break;
+        case 'year':
+            label = 'MMMM';
+            number = 12;
+            byPeriod = 'months';
+            break;
+        default:
+            throw new Error('Unknown period ' + period);
+    }
+
+    // todo: cache
+    this._periodActivityStat(period, number, byPeriod, label, cb);
+};
+
+ErrorSchema.statics._periodActivityStat = function(period, number, byPeriod, label, cb) {
+    var that = this,
+        start = Period.getStartOf(period),
+        now = +new Date(),
+        hours = _.map(_.range(number), function(i) {
+            return +moment(start).add(byPeriod, i);
+        }),
+        result = {
+            labels: _.map(hours, function(hour) {
+                return moment(hour).format(label);
+            }),
+            datasets: [{ // todo: remove options
+                fillColor: "rgba(220,220,220,0.5)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                data: []
+            }]
+        };
+
+    async.eachSeries(hours, function(hour, hourCb) {
+        if (hour > now) {
+            return hourCb(null, 0);
+        }
+        that.count({
+            createdAt: { '$gt': start, '$lt': hour }
+        }, function(err, count) {
+            start = hour;
+            result.datasets[0].data.push(count);
+            hourCb(err);
+        });
+    }, function(err) {
+        cb(err, result);
+    });
 };
 
 module.exports = {
