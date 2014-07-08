@@ -9,6 +9,7 @@ var mongoose = require("mongoose"),
     moment = require('moment'),
     async = require('async'),
     _ = require('lodash'),
+    cache = require('memory-cache'),
     methods = {
         getBrowserShortName: function(name) {
             return (name) ? name.split(' ')[0].toLowerCase() : false;
@@ -241,6 +242,13 @@ ErrorSchema.statics.periodActivityStat = function(period, cb) {
 };
 
 ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label, cb) {
+    var cacheKey = 'as'+period+number+byPeriod+label.replace(' ', ''),
+        cached = cache.get(cacheKey);
+
+    if (cached) {
+        return cb(null, JSON.parse(cached));
+    }
+
     var that = this,
         start = Period.getStartOf(period),
         now = +new Date(),
@@ -266,6 +274,7 @@ ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label
             hourCb(err);
         });
     }, function(err) {
+        cached = cache.put(cacheKey, JSON.stringify(result), 3600000);
         cb(err, result);
     });
 };
