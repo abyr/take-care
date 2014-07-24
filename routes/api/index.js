@@ -11,7 +11,7 @@ var express = require('express'),
 
             var body = req.body,
                 i = index,
-                message, url, browser, beforeLoad, fake;
+                message, url, browser, beforeLoad, fake, trace;
 
             if (typeof i !== 'undefined') { // allow zero index
                 fake = (body.fake && body.fake[i]) ? !!body.fake : false;
@@ -22,6 +22,7 @@ var express = require('express'),
                 symbol = (body.symbolNumber && body.symbolNumber[i]) ? +body.symbolNumber[i]: null;
                 browser = body.browser[i];
                 beforeLoad = body.beforeLoad[i];
+                trace = body.trace[i];
 
             } else {
                 fake = body.fake;
@@ -31,12 +32,14 @@ var express = require('express'),
                 symbol = body.symbolNumber || null;
                 browser = body.browser;
                 beforeLoad = body.beforeLoad;
+                trace = body.trace;
             }
 
             errorLog = new ErrorLog({
                 message: message,
                 url: url,
                 line: +line,
+                trace: trace,
                 beforeLoad: Boolean(+beforeLoad),
                 occuredTimes: 0,
                 createdAt: (+new Date())
@@ -50,6 +53,9 @@ var express = require('express'),
             }
             if (browser) {
                 errorLog.browser = browser;
+            }
+            if (trace) {
+                errorLog.trace = trace;
             }
 
             return errorLog;

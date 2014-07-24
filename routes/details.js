@@ -41,13 +41,19 @@ router.get('/:id', function(req, res, next) {
                 value: item.count,
                 color: theme.colors[i],
                 label : item.name,
-                labelColor : 'white',
-                labelFontSize : '12'
             };
         });
 
         // json data for browsers pie chart
         errorLog.pieData = JSON.stringify(pieData);
+
+        console.log(errorLog.trace);
+
+        if (errorLog.trace) { // use array, block template
+            errorLog.trace = errorLog.trace.split('\n').join('<br />&nbsp;&nbsp;');
+        }
+
+        console.log(errorLog.trace);
 
         // finalize errorLog
         feedback.errorLog = [errorLog]; // using the same partial

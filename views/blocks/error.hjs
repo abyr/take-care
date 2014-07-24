@@ -27,8 +27,17 @@
             </span>
         </div>
 
+        {{#hideDetailsLink}}
+            {{#trace}}
+                <ul class="trace">
+                    <li>{{{trace}}}</li>
+                </ul>
+            {{/trace}}
+        {{/hideDetailsLink}}
+
         <div>
             {{#hideDetailsLink}}
+
                 <ul>
                     <li>{{datetime}}</li>
                 </ul>
@@ -51,7 +60,6 @@
                     <a href="/details/{{_id}}">Details</a>
                 {{/occuredTimes}}
             {{/hideDetailsLink}}
-
         </div>
 
     {{/message}}
