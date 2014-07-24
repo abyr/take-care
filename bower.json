@@ -27,7 +27,6 @@
     "tests"
   ],
   "dependencies": {
-    "chartjs": "*",
-    "regaddi_chartjs": "git@github.com:Regaddi/Chart.js.git"
+    "chartjs": "1.0.1-beta.2"
   }
 }
