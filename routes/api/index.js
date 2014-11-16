@@ -16,15 +16,21 @@ var express = require('express'),
             if (typeof i !== 'undefined') { // allow zero index
                 fake = (body.fake && body.fake[i]) ? !!body.fake : false;
 
+                console.log('fake', fake);
+                console.log('body', body);
+
                 message = body.message[i];
                 url = body.url[i];
                 line = body.lineNumber[i];
                 symbol = (body.symbolNumber && body.symbolNumber[i]) ? +body.symbolNumber[i]: null;
                 browser = body.browser[i];
                 beforeLoad = body.beforeLoad[i];
-                trace = body.trace[i];
+                trace = body.trace ? body.trace[i] : false;
 
             } else {
+
+                console.log('bbbbbb', body);
+
                 fake = body.fake;
                 message = body.message;
                 url = body.url;
