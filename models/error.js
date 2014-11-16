@@ -253,7 +253,8 @@ ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label
         start = Period.getStartOf(period),
         now = +new Date(),
         hours = _.map(_.range(number), function(i) {
-            return +moment(start).add(byPeriod, i);
+            // return +moment(start).add(byPeriod, i); // deprecated
+            return +moment(start).add(i, byPeriod);
         }),
         result = {
             labels: _.map(hours, function(hour) {
@@ -263,7 +264,8 @@ ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label
         };
 
     async.eachSeries(hours, function(hour, hourCb) {
-        if (hour > +moment(now).add(byPeriod, 1)) {
+        // if (hour > +moment(now).add(byPeriod, 1)) { // deprecated
+        if (hour > +moment(now).add(1, byPeriod)) {
             return hourCb(null, 0);
         }
         that.count({
