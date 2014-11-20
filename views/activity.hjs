@@ -2,6 +2,11 @@
 
 <h1>{{title}}</h1>
 
+
+<h2>Overall</h2>
+{{> overall}}
+<br/>
+
 {{> filters}}
 
 <br/>
