@@ -35,7 +35,7 @@ Install dependencies
 
 Create config
 
-    cp config.example.js conf.js
+    cp config.example.js config.js
 
 Configure DB connection
 
