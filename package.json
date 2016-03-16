@@ -20,13 +20,13 @@
     "moment": "^2.6.0",
     "mongoose": "^4.4.7",
     "morgan": "^1.0.1",
-    "static-favicon": "^1.0.2"
+    "static-favicon": "^1.0.2",
+    "memory-cache": "0.0.5"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-nodeunit": "^0.4.0",
     "grunt-contrib-yuidoc": "^0.5.2",
-    "memory-cache": "0.0.5"
   }
 }
