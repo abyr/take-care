@@ -33,9 +33,10 @@ Install dependencies
     cd take-care
     npm install
 
-Create config
+Create development configs
 
-    cp config.example.js config.js
+    cp config.production.js config.js
+    cp ff.production.json ff.json
 
 Configure DB connection
 

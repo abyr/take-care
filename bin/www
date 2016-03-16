@@ -2,23 +2,25 @@
 var debug = require('debug')('my-application');
 var app = require('../app'),
     env = app.get('env'),
-    // ff = require('../helpers/ff'),
     appConfig,
-    port = process.env.PORT || 3000;
+    port = process.env.PORT || 3000,
+    ff,
+    server;
 
 if (env === 'development') {
     env = '';
 }
-appConfig = require('../config' + ((env) ? '.' + env : ''));
+ff = require('../helpers/ff' + (env ? '.' + env : ''));
+
+appConfig = require('../config' + (env ? '.' + env : ''));
 if (appConfig && appConfig.app && appConfig.app.port) {
     port = appConfig.app.port;
 }
 app.set('port', process.env.PORT || port);
 
-var server = app.listen(app.get('port'), function() {
+server = app.listen(app.get('port'), function () {
     var message = 'Express server listening on port ' + server.address().port;
 
-    // ff && ff('print_port_on_start') && console.log(message);
-    console.log(message);
+    ff('print_port_on_start') && console.log(message);
     debug(message);
 });

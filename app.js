@@ -10,13 +10,15 @@ var express = require('express'),
     app = express(),
     env = app.get('env'),
     appConfig,
-    dbOptions;
+    dbOptions, db,
+    partials,
+    routes;
 
 if (env === 'development') {
     env = '';
 }
-appConfig = require('./config' + ((env) ? '.' + env : ''));
 
+appConfig = require('./config' + ((env) ? '.' + env : ''));
 if (appConfig && appConfig.db) {
     dbOptions = {
         server: {
@@ -28,10 +30,9 @@ if (appConfig && appConfig.db) {
         }
     };
 
-    // connect
     mongoose.connect(appConfig.db.connection, dbOptions);
 
-    var db = mongoose.connection;
+    db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -43,14 +44,11 @@ if (appConfig && appConfig.db) {
     });
 }
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
 
-// partials
-var partials = require(path.join(__dirname, 'routes/partials'));
+partials = require(path.join(__dirname, 'routes/partials'));
 
-// app.set('partials', partials);
 app.locals.partials = partials;
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
@@ -60,23 +58,20 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// routes
-var routes = require(path.join(__dirname, 'routes'));
-
-_.each(_.keys(routes), function(key){
+routes = require(path.join(__dirname, 'routes'));
+_.each(_.keys(routes), function (key) {
     app.use((key === 'index') ? '/' : '/'+key, routes[key]);
 });
 
-// catch 404 and forwarding to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error('Not Found');
+
     err.status = 404;
     next(err);
 });
 
-// development error handler
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function (err, req, res, next) {
         if (err.status && err.status === 404) {
             console.log(err);
             return res.render('404', {
@@ -90,8 +85,7 @@ if (app.get('env') === 'development') {
         });
     });
 }
-// production error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('500', {
         message: err.message,
