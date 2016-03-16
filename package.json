@@ -26,5 +26,8 @@
     "grunt-contrib-nodeunit": "^0.4.0",
     "grunt-contrib-yuidoc": "^0.5.2",
     "memory-cache": "0.0.5"
+  },
+  "scripts": {
+    "postinstall": "rm -rf bower_components && node_modules/bower/bin/bower install"
   }
 }
