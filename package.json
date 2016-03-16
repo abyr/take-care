@@ -2,7 +2,7 @@
   "name": "take-care",
   "description": "Save the errors that you want to take care.",
   "homepage": "http://abyr.github.io/take-care/",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",

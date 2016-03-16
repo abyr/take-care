@@ -2,7 +2,7 @@
 var debug = require('debug')('my-application');
 var app = require('../app'),
     env = app.get('env'),
-    ff = require('../helpers/ff'),
+    ff = false, //require('../helpers/ff'),
     appConfig,
     port = process.env.PORT || 3000;
 
@@ -18,6 +18,6 @@ app.set('port', port);
 var server = app.listen(app.get('port'), function() {
     var message = 'Express server listening on port ' + server.address().port;
 
-    ff('print_port_on_start') && console.log(message);
+    ff && ff('print_port_on_start') && console.log(message);
     debug(message);
 });
