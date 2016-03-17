@@ -1,1 +1,10 @@
-hello
+{{> head}}
+
+<h1>Login</h1>
+<form method="POST" action="/login">
+    Email <input type="email" name="email" />
+    <br/>
+    Pass <input type="password" name="pass" />
+    <br/>
+    <input type="submit" value="Login" />
+</form>

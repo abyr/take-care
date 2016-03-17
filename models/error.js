@@ -1,9 +1,7 @@
 /**
  * ErrorLog entity
- *
  * @module model
  */
-
 var mongoose = require("mongoose"),
     Period = require('../helpers/period'),
     moment = require('moment'),
@@ -18,7 +16,6 @@ var mongoose = require("mongoose"),
 
 /**
  * ErrorLog fields and methods
- *
  * @class ErrorSchema
  * @static
  */
@@ -62,7 +59,7 @@ var ErrorSchema = new mongoose.Schema({
  * @param  {String}   message Error message
  * @param  {Function} cb      Callback
  */
-ErrorSchema.statics.getTimesCount = function(message, cb) {
+ErrorSchema.statics.getTimesCount = function (message, cb) {
     this.count({ message: message }, cb);
 };
 
@@ -73,7 +70,7 @@ ErrorSchema.statics.getTimesCount = function(message, cb) {
  * @param  {String}   period Period name (day, week, etc.)
  * @param  {Function} cb     Callback
  */
-ErrorSchema.statics.getCountForThePeriod = function(period, cb) {
+ErrorSchema.statics.getCountForThePeriod = function (period, cb) {
     this.count({
         createdAt: { $gt: Period.getStartOf(period) }
     }, cb);
@@ -87,18 +84,18 @@ ErrorSchema.statics.getCountForThePeriod = function(period, cb) {
  * @param  {Object}   filters Mongoose filters
  * @param  {Function} cb      Callback
  */
-ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
+ErrorSchema.statics.findRichForThePeriod = function (period, filters, cb) {
     var that = this;
     this.find({
         createdAt: { $gt: Period.getStartOf(period) }
-    }, null, filters, function(err, logs) {
+    }, null, filters, function (err, logs) {
         if (err) {
             cb(err);
         }
-        async.each(logs, function(log, logCb) {
+        async.each(logs, function (log, logCb) {
             log.ignoreBrowsers = true;
             that.addRichFields(log, logCb);
-        }, function(err) {
+        }, function (err) {
             cb(err, logs);
         });
     });
@@ -111,7 +108,7 @@ ErrorSchema.statics.findRichForThePeriod = function(period, filters, cb) {
  * @param {Object}   log Error item
  * @param {Function} cb  Callback
  */
-ErrorSchema.statics.addRichFields = function(log, cb) {
+ErrorSchema.statics.addRichFields = function (log, cb) {
     var that = this;
     // dates
     log.datetime = Period.daytime(log.createdAt);
@@ -121,7 +118,7 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
         return cb(null, log);
     }
     // times
-    this.getTimesCount(log.message, function(err, count) {
+    this.getTimesCount(log.message, function (err, count) {
         if (count) {
             log.occuredTimes = count;
         }
@@ -129,13 +126,13 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
             return cb(null, log);
         }
         // browsers statistic
-        that.findAllBrowsers(log, function(err, browsers) {
+        that.findAllBrowsers(log, function (err, browsers) {
             // no version names
             log.browsers = _.map(browsers, methods.getBrowserShortName);
             // statistic
             log.browsersStat = [];
-            async.each(browsers, function(bro, broCb) {
-                that.getErrorBrowserCount(log, bro, function(err, count) {
+            async.each(browsers, function (bro, broCb) {
+                that.getErrorBrowserCount(log, bro, function (err, count) {
                     log.browsersStat.push({
                         name: bro,
                         shortname: methods.getBrowserShortName(bro),
@@ -143,7 +140,7 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
                     });
                     broCb(err, log);
                 });
-            }, function() {
+            }, function () {
                 cb(err, log);
             });
         });
@@ -157,9 +154,9 @@ ErrorSchema.statics.addRichFields = function(log, cb) {
  * @param  {String}   id ID hash
  * @param  {Function} cb Callback
  */
-ErrorSchema.statics.findRichErrorById = function(id, cb) {
+ErrorSchema.statics.findRichErrorById = function (id, cb) {
     var that = this;
-    this.findById(id, function(err, log) {
+    this.findById(id, function (err, log) {
         if (err) {
             return cb(err);
         }
@@ -175,26 +172,26 @@ ErrorSchema.statics.findRichErrorById = function(id, cb) {
  * @param  {Object}   filters Mongoose filters
  * @param  {Function} cb      Callback
  */
-ErrorSchema.statics.findRichSimilarErrors = function(baseLog, filters, cb) {
+ErrorSchema.statics.findRichSimilarErrors = function (baseLog, filters, cb) {
     var that = this;
-    this.find({ message: baseLog.message }, null, filters || {}, function(err, logs) {
+    this.find({ message: baseLog.message }, null, filters || {}, function (err, logs) {
         if (err) {
             cb(err);
         }
-        async.each(logs, function(log, logCb) {
+        async.each(logs, function (log, logCb) {
             log.isChild = true;
             that.addRichFields(log, logCb);
-        }, function(err) {
+        }, function (err) {
             cb(err, logs);
         });
     });
 };
 
-ErrorSchema.statics.findAllBrowsers = function(baseLog, cb) {
+ErrorSchema.statics.findAllBrowsers = function (baseLog, cb) {
     this.find({ message: baseLog.message }).distinct('browser', cb);
 };
 
-ErrorSchema.statics.getErrorBrowserCount = function(baseLog, browser, cb) {
+ErrorSchema.statics.getErrorBrowserCount = function (baseLog, browser, cb) {
     this.count({ message: baseLog.message, browser: browser }, cb);
 };
 
@@ -203,14 +200,14 @@ ErrorSchema.statics.getErrorBrowserCount = function(baseLog, browser, cb) {
  * @param  {String}   period Period name
  * @param  {Function} cb     Callback
  */
-ErrorSchema.statics.removeLaterThen = function(period, cb) {
+ErrorSchema.statics.removeLaterThen = function (period, cb) {
     this.find({
         createdAt: { $lt: Period.getStartOf(period) }
     }).remove(cb);
 };
 
 // todo: cache
-ErrorSchema.statics.periodActivityStat = function(period, cb) {
+ErrorSchema.statics.periodActivityStat = function (period, cb) {
     var label = 'MMMM Do',
         byPeriod = 'days',
         number;
@@ -241,7 +238,7 @@ ErrorSchema.statics.periodActivityStat = function(period, cb) {
     this.fetchActivityStat(period, number, byPeriod, label, cb);
 };
 
-ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label, cb) {
+ErrorSchema.statics.fetchActivityStat = function (period, number, byPeriod, label, cb) {
     var cacheKey = 'as'+period+number+byPeriod+label.replace(' ', ''),
         cached = cache.get(cacheKey);
 
@@ -252,30 +249,30 @@ ErrorSchema.statics.fetchActivityStat = function(period, number, byPeriod, label
     var that = this,
         start = Period.getStartOf(period),
         now = +new Date(),
-        hours = _.map(_.range(number), function(i) {
+        hours = _.map(_.range(number), function (i) {
             // return +moment(start).add(byPeriod, i); // deprecated
             return +moment(start).add(i, byPeriod);
         }),
         result = {
-            labels: _.map(hours, function(hour) {
+            labels: _.map(hours, function (hour) {
                 return moment(hour).format(label);
             }),
             datasets: [{ data: [] }]
         };
 
-    async.eachSeries(hours, function(hour, hourCb) {
+    async.eachSeries(hours, function (hour, hourCb) {
         // if (hour > +moment(now).add(byPeriod, 1)) { // deprecated
         if (hour > +moment(now).add(1, byPeriod)) {
             return hourCb(null, 0);
         }
         that.count({
             createdAt: { '$gt': start, '$lt': hour }
-        }, function(err, count) {
+        }, function (err, count) {
             start = hour;
             result.datasets[0].data.push(count);
             hourCb(err);
         });
-    }, function(err) {
+    }, function (err) {
         cached = cache.put(cacheKey, JSON.stringify(result), 3600000);
         cb(err, result);
     });

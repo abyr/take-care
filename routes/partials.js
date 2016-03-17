@@ -1,7 +1,3 @@
-/**
- * List of partials
- */
-
 var partials = {
     head: 'blocks/head',
     footer: 'blocks/footer',

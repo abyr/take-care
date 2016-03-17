@@ -17,7 +17,6 @@ var express = require('express'),
 if (env === 'development') {
     env = '';
 }
-
 appConfig = require('./config' + ((env) ? '.' + env : ''));
 if (appConfig && appConfig.db) {
     dbOptions = {
@@ -31,7 +30,6 @@ if (appConfig && appConfig.db) {
     };
 
     mongoose.connect(appConfig.db.connection, dbOptions);
-
     db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'connection error:'));

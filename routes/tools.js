@@ -1,21 +1,12 @@
-/**
- * System tools
- */
-
 var express = require('express'),
     router = express.Router(),
     ErrorLog = require("../models/error").ErrorLog;
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     var period = req.body.period || req.query.period || false;
 
-    if (!period) {
-        res.render('tools', {
-            title: 'Tools',
-            periods: ['year', 'month']
-        });
-    } else {
-        ErrorLog.removeLaterThen(period, function(err) {
+    if (period) {
+        ErrorLog.removeLaterThen(period, function (err) {
             if (err) {
                 return next(err);
             }
@@ -23,6 +14,11 @@ router.get('/', function(req, res, next) {
                 title: 'Tools',
                 period: period
             });
+        });
+    } else {
+        res.render('tools', {
+            title: 'Tools',
+            periods: ['year', 'month']
         });
     }
 });

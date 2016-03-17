@@ -4,14 +4,13 @@ var app = require('../app'),
     env = app.get('env'),
     appConfig,
     port = process.env.PORT || 3000,
-    ff,
+    ff = require('../helpers/ff'),
     server;
 
-if (env === 'development') {
-    env = '';
-}
-ff = require('../helpers/ff' + (env ? '.' + env : ''));
 
+if (env === 'development') {
+    env = 'production';
+}
 appConfig = require('../config' + (env ? '.' + env : ''));
 if (appConfig && appConfig.app && appConfig.app.port) {
     port = appConfig.app.port;

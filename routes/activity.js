@@ -6,7 +6,7 @@ var express = require('express'),
     Pagination = require('../helpers/pagination'),
     ErrorLog = require("../models/error").ErrorLog;
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     var period = req.body.period || req.query.period || 'day',
         page = +req.body.page || +req.query.page || 1,
         limit = +req.body.limit || +req.query.limit || 10,
@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
         // response
         feedback;
 
-    ErrorLog.getCountForThePeriod(period, function(err, periodCount) {
+    ErrorLog.getCountForThePeriod(period, function (err, periodCount) {
         if (err) {
             return next(err);
         }
@@ -44,9 +44,9 @@ router.get('/', function(req, res, next) {
         queryFilters = _.pick(pagination, 'skip', 'sort', 'limit');
 
         async.series({
-            stats: function(cb) {
-                ErrorLog.periodActivityStat(period, function(err, data) {
-                    _.each(data.datasets, function(set) {
+            stats: function (cb) {
+                ErrorLog.periodActivityStat(period, function (err, data) {
+                    _.each(data.datasets, function (set) {
                         set.fillColor = "rgba(220,220,220,0.5)";
                         set.strokeColor = "rgba(220,220,220,1)";
                         set.pointColor = "rgba(220,220,220,1)";
@@ -55,10 +55,10 @@ router.get('/', function(req, res, next) {
                     cb(err, data);
                 });
             },
-            logs: function(cb) {
+            logs: function (cb) {
                 ErrorLog.findRichForThePeriod(period, queryFilters, cb);
             }
-        }, function(err, results) {
+        }, function (err, results) {
             if (err) {
                 return next(err);
             }
@@ -67,7 +67,7 @@ router.get('/', function(req, res, next) {
             // activity for the period
             feedback.errors = results.logs;
             // update controls
-            pagination.items = _.each(pagination.navs, function(p) {
+            pagination.items = _.each(pagination.navs, function (p) {
                 p.active = (p.page === page || p.page < 1 || p.page > pagination.pages);
             });
             feedback.pagination = pagination;

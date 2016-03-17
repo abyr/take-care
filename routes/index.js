@@ -1,7 +1,3 @@
-/**
- * List of routes
- */
-
 var path = require('path'),
     routes = {
         api: require(path.join(__dirname, 'api')),

@@ -1,4 +1,4 @@
-var Pagination = function(page, limit, pages) {
+var Pagination = function (page, limit, pages) {
     // defaults
     this.page = 1;
     this.limit = 10;

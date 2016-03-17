@@ -23,11 +23,11 @@
 
 <script>
     var navs = document.querySelectorAll('.clickable'),
-        confirmation = function(e) {
+        confirmation = function (evnt) {
             var key = this.getAttribute('data-key'),
                 value = this.getAttribute('data-val') || this.textContent;
 
-            e && e.preventDefault && e.preventDefault();
+            evnt && evnt.preventDefault && evnt.preventDefault();
             if (confirm('The errors later then ' + value + ' will be removed')) {
                 window.location.search = [key, value].join('=');
             }

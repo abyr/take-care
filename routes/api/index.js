@@ -5,18 +5,16 @@ var express = require('express'),
     Period = require('../../helpers/period'),
     ErrorLog = require("../../models/error").ErrorLog,
     methods = {
-
         // process indexed data using index
-        makeErrorFromRequest: function(req, index) {
-
+        makeErrorFromRequest: function (req, index) {
             var body = req.body,
                 i = index,
                 message, url, browser, beforeLoad, fake, trace;
 
             if (typeof i !== 'undefined') { // allow zero index
-                fake = (body.fake && body.fake[i]) ? !!body.fake : false;
+                isFake = (body.fake && body.fake[i]) ? !!body.fake : false;
 
-                console.log('fake', fake);
+                console.log('fake', isFake);
                 console.log('body', body);
 
                 message = body.message[i];
@@ -28,10 +26,7 @@ var express = require('express'),
                 trace = body.trace ? body.trace[i] : false;
 
             } else {
-
-                console.log('bbbbbb', body);
-
-                fake = body.fake;
+                isFake = body.fake;
                 message = body.message;
                 url = body.url;
                 line = body.lineNumber;
@@ -54,8 +49,8 @@ var express = require('express'),
             if (symbol) {
                 errorLog.symbol = symbol;
             }
-            if (fake) {
-                errorLog.fake = fake;
+            if (isFake) {
+                errorLog.fake = isFake;
             }
             if (browser) {
                 errorLog.browser = browser;
@@ -63,14 +58,12 @@ var express = require('express'),
             if (trace) {
                 errorLog.trace = trace;
             }
-
             return errorLog;
         }
     };
 
 // record new error log
-router.post('/', function(req, res, next) {
-
+router.post('/', function (req, res, next) {
     var message = req.body.message,
         errorLog,
         errorLogs = [],
@@ -106,7 +99,7 @@ router.post('/', function(req, res, next) {
     }
 
     // save several errors
-    async.each(errorLogs, function(errorLog, callback) {
+    async.each(errorLogs, function (errorLog, callback) {
         // save single error
         errorLog.save(function(err) {
             if (err) {
@@ -116,7 +109,7 @@ router.post('/', function(req, res, next) {
             // saved
             return callback(null, errorLog);
         });
-    }, function(err) {
+    }, function (err) {
         if (err) {
             return next(err);
         }
@@ -125,7 +118,7 @@ router.post('/', function(req, res, next) {
     });
 });
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     var period = req.body.period || req.query.period || 'day',
         filters = {
             createdAt: {
@@ -137,7 +130,7 @@ router.get('/', function(req, res, next) {
         sort: {
             createdAt: -1
         }
-    }, function(err, data) {
+    }, function (err, data) {
         if (err) {
             return next(err);
         }
@@ -145,7 +138,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/count', function(req, res) {
+router.get('/count', function (req, res) {
     var period = req.body.period || req.query.period || 'day',
         filters = {
             createdAt: {
@@ -153,7 +146,7 @@ router.get('/count', function(req, res) {
             }
         };
 
-    ErrorLog.count(filters, function(err, count) {
+    ErrorLog.count(filters, function (err, count) {
         if (err) {
             return res.send(500, {
                 error: true,
@@ -167,7 +160,7 @@ router.get('/count', function(req, res) {
 });
 
 // clear all logs before the period ('day', 'week', 'month', etc.)
-router.delete('/', function(req, res, next) {
+router.delete('/', function (req, res, next) {
     var period = req.body.period || req.query.period || 'year',
         filters = {
             createdAt: {
@@ -175,12 +168,12 @@ router.delete('/', function(req, res, next) {
             }
         };
 
-    ErrorLog.find(filters, function(err, data) {
+    ErrorLog.find(filters, function (err, data) {
         if (err) {
             return next(err);
         }
-        _.each(data, function(doc) {
-            doc.remove(function(err) {
+        _.each(data, function (doc) {
+            doc.remove(function (err) {
                 if (err) {
                     return res.send(500, {
                         error: true,

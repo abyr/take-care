@@ -37,10 +37,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
-
-    // alias
     grunt.registerTask('doc', ['yuidoc']);
 
     grunt.registerTask('default', ['jshint']);
-
 };

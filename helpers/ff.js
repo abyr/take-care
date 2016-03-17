@@ -1,9 +1,15 @@
+var app = require('../app'),
+    env = app.get('env');
+
+if (env === 'development') {
+    env = '';
+}
+
 /**
  * Simple feature flags
- * @type {Object}
  */
-var features = require('../ff.json'),
-    featureFlags = function(alias) {
+var features = require('../ff' + (env ? '.' + env : '') + '.json'),
+    featureFlags = function (alias) {
         return !!features[alias];
     };
 
